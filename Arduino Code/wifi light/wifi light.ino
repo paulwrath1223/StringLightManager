@@ -50,6 +50,7 @@ int g;
 int b;
 int numColors;
 int updateCounter;
+int lastNumColors;
 
 String path;
 String modePath;
@@ -107,8 +108,6 @@ void setup()
 
   Firebase.setDoubleDigits(5);
 
-  numPixels = Firebase.getInt(fbdo, lightLengthPath);
-
   updateCloud()
 }
 
@@ -162,14 +161,16 @@ void updateCloud()
     if(update == 1)
     {
         mode = Firebase.getInt(fbdo, modePath);
+        lastNumColors = numColors
         numColors = Firebase.getInt(fbdo, colorLengthPath);
-
-        if (colorList != 0)
+        if( ! (lastNumColors == numColors))
         {
-          delete [] colorList;
+            if (colorList != 0)
+            {
+              delete [] colorList;
+            }
+            colorList = new uint32_t [numPixels];
         }
-        colorList = new uint32_t [numPixels];
-
         numPixels = Firebase.getInt(fbdo, lightLengthPath);
         pixels.updateLength(numPixels);
 
