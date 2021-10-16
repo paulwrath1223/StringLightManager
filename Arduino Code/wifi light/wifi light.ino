@@ -2,14 +2,10 @@
 #include <ESP8266WiFi.h>
 #include <FirebaseESP8266.h>
 
-
-//Provide the token generation process info.
 #include <addons/TokenHelper.h>
 
-//Provide the RTDB payload printing info and other helper functions.
 #include <addons/RTDBHelper.h>
 
-/* 1. Define the WiFi credentials */
 #define WIFI_SSID "WIFI910"
 #define WIFI_PASSWORD "1cadenas"
 
@@ -50,6 +46,7 @@ int g;
 int b;
 int numColors;
 int updateCounter;
+int lastNumColors;
 
 String path;
 String modePath;
@@ -107,8 +104,6 @@ void setup()
 
   Firebase.setDoubleDigits(5);
 
-  numPixels = Firebase.getInt(fbdo, lightLengthPath);
-
   updateCloud()
 }
 
@@ -141,15 +136,11 @@ void loop()
     {
       waveOffset = 0;
     }
-    for(int i=0; i<numPixels; i++) { // For each pixel...
-
-    // pixels.Color() takes RGB values, from 0,0,0 up to 255,255,255
-    // Here we're using a moderately bright green color:
-
-    pixels.setPixelColor(i, colorList[((i + waveOffset) % numColors)]);
-
-    pixels.show();   // Send the updated pixel colors to the hardware.
-    waveOffset++;
+    for(int i=0; i<numPixels; i++)  // For each pixel...
+    {
+        pixels.setPixelColor(i, colorList[((i + waveOffset) % numColors)]);
+        pixels.show();   // Send the updated pixel colors to the hardware.
+        waveOffset++;
     }
   }
   updateCounter++;
@@ -162,14 +153,16 @@ void updateCloud()
     if(update == 1)
     {
         mode = Firebase.getInt(fbdo, modePath);
+        lastNumColors = numColors
         numColors = Firebase.getInt(fbdo, colorLengthPath);
-
-        if (colorList != 0)
+        if( ! (lastNumColors == numColors))
         {
-          delete [] colorList;
+            if (colorList != 0)
+            {
+              delete [] colorList;
+            }
+            colorList = new uint32_t [numPixels];
         }
-        colorList = new uint32_t [numPixels];
-
         numPixels = Firebase.getInt(fbdo, lightLengthPath);
         pixels.updateLength(numPixels);
 
