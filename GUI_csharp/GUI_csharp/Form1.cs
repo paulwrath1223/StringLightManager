@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 
 namespace GUI_csharp
 {
@@ -20,6 +21,7 @@ namespace GUI_csharp
         private void Form1_Load(object sender, EventArgs e)
         {
             Console.WriteLine("Everything working");
+            panel1.Visible = false;
         }
     }
 }
