@@ -7,6 +7,8 @@ rgbList = []
 
 from tkinter import *
 
+colorButtons = []
+colorSliders = []
 
 menu = Menu(root)
 root.config(menu=menu)
@@ -14,11 +16,15 @@ filemenu = Menu(menu)
 menu.add_cascade(label='File', menu=filemenu)
 filemenu.add_command(label='New')
 filemenu.add_command(label='Open...')
+filemenu.add_command(label='Save...')
+filemenu.add_command(label='Save as...')
 filemenu.add_separator()
 filemenu.add_command(label='Exit', command=root.quit)
 helpmenu = Menu(menu)
 menu.add_cascade(label='Help', menu=helpmenu)
 helpmenu.add_command(label='About')
+frame = Frame(root)
+frame.pack()
 
 
 class Controller:
@@ -64,6 +70,10 @@ def done():
 
 def addColor():
     rgbList.append((askcolor(title="Pick a color"))[0])
+    colorButtons.append(Button(root, text='Change color').pack())
+    colorSliders.append(Scale(root, from_=0, to=200, orient=HORIZONTAL).pack())
+
+    root.mainloop()
 
 
 button = Button(root, text='Add color', command=addColor)
