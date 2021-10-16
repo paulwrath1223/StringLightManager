@@ -19,7 +19,7 @@
 /* 3. Define the RTDB URL */
 #define DATABASE_URL "https://light-data1-default-rtdb.firebaseio.com/" //<databaseName>.firebaseio.com or <databaseName>.<region>.firebasedatabase.app
 
-/* 4. Define the user Email and password that alreadey registerd or added in your project */
+/* 4. Define the user Email and password that already registered or added in your project */
 #define USER_EMAIL "paul@fornage.net"
 #define USER_PASSWORD "Paulrf99"
 
@@ -49,12 +49,14 @@ int r;
 int g;
 int b;
 int numColors;
+int updateCounter;
 
 String path;
 String modePath;
 String lightLengthPath;
 String colorLengthPath;
 String colorPath;
+String updatePath;
 
 int waveOffset = 0;
 
@@ -62,6 +64,7 @@ uint32_t* colorList = 0;
 
 void setup()
 {
+  updatePath = basePath + "/update";
   modePath = basePath + "/mode";
   lightLengthPath = basePath + "/numLights";
   colorLengthPath = basePath + "/colorLength";
@@ -106,45 +109,18 @@ void setup()
 
   numPixels = Firebase.getInt(fbdo, lightLengthPath);
 
+  updateCloud()
 }
 
 void loop()
 {
-  //Flash string (PROGMEM and  (FPSTR), String,, String C/C++ string, const char, char array, string literal are supported
-  //in all Firebase and FirebaseJson functions, unless F() macro is not supported.
-
-  if (Firebase.ready() && (millis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0))
+  if(updateCounter > 1000)
   {
-    sendDataPrevMillis = millis();
-    
-    //For generic set/get functions.
-
-    //For generic set, use Firebase.set(fbdo, <path>, <any variable or value>)
-
-    //For generic get, use Firebase.get(fbdo, <path>).
-
-
-    mode = Firebase.getInt(fbdo, modePath);
-    numColors = Firebase.getInt(fbdo, colorLengthPath);
-
-    if (colorList != 0) {
-      delete [] colorList;
-    }
-    colorList = new uint32_t [numPixels];
-
-    numPixels = Firebase.getInt(fbdo, lightLengthPath);
-    pixels.updateLength(numPixels);
-
-    for(int counter = 0; counter<numColors; counter++)
-    {
-      path = colorPath + String(counter) + "/";
-      r = Firebase.getInt(fbdo, path+"r/");
-      g = Firebase.getInt(fbdo, path+"g/");
-      b = Firebase.getInt(fbdo, path+"b/");
-      colorList[counter] = pixels.Color(r, g, b);
-    }
+    updateCloud()
+    updateCounter = 0;
   }
-  
+  //Flash string (PROGMEM and  (FPSTR), String,, String C/C++ string, const char, char array, string literal are supported
+  //in all Firebase and FirebaseJson functions, unless F() macro is not supported
 
   if(mode==0) // set color mode
   {
@@ -170,16 +146,44 @@ void loop()
     // pixels.Color() takes RGB values, from 0,0,0 up to 255,255,255
     // Here we're using a moderately bright green color:
 
-    pixels.setPixelColor(i, colorList[(i % numColors)]);
+    pixels.setPixelColor(i, colorList[((i + waveOffset) % numColors)]);
 
     pixels.show();   // Send the updated pixel colors to the hardware.
     waveOffset++;
     }
   }
+  updateCounter++;
 }
 
 
+void updateCloud()
+{
+    update = Firebase.getInt(fbdo, updatePath)
+    if(update == 1)
+    {
+        mode = Firebase.getInt(fbdo, modePath);
+        numColors = Firebase.getInt(fbdo, colorLengthPath);
 
+        if (colorList != 0)
+        {
+          delete [] colorList;
+        }
+        colorList = new uint32_t [numPixels];
+
+        numPixels = Firebase.getInt(fbdo, lightLengthPath);
+        pixels.updateLength(numPixels);
+
+        for(int counter = 0; counter<numColors; counter++)
+        {
+          path = colorPath + String(counter) + "/";
+          r = Firebase.getInt(fbdo, path+"r/");
+          g = Firebase.getInt(fbdo, path+"g/");
+          b = Firebase.getInt(fbdo, path+"b/");
+          colorList[counter] = pixels.Color(r, g, b);
+        }
+        Firebase.setInt(fbdo, updatePath, 0);
+    }
+}
 
 
 
