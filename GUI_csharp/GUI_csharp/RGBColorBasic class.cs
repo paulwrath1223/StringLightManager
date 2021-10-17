@@ -12,7 +12,7 @@ namespace GUI_csharp
         public int g = 0;
         public int b = 0;
 
-        RGBColorBasic(int ri, int gi, int bi)
+        public RGBColorBasic(int ri, int gi, int bi)
         {
             r = ri;
             g = gi;

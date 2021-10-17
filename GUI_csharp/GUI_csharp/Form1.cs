@@ -28,8 +28,8 @@ namespace GUI_csharp
             Add_Arduino();
             Control l = FindControl(groupBoxes[0], "Speed"); ;
             l.Text = "Speed";
-            Debug.WriteLine(ArdToJson(arduinos[0]));
-            Debug.Flush();
+            //Debug.WriteLine(ArdToJson(arduinos[0]));
+            //Debug.Flush();
 
 
         }
@@ -147,15 +147,18 @@ namespace GUI_csharp
 
         private string ArdToJson(Arduino ard)
         {
-            string jsonOut = JsonConvert.SerializeObject(ard);
+            List<RGBColorBasic> tempColors = new List<RGBColorBasic>();
+            tempColors = ColorCompiler(ard._colorList);
+            JsonArduino temp = new JsonArduino(ard, tempColors);
+            string jsonOut = JsonConvert.SerializeObject(temp);
             return jsonOut;
         }
 
-        private List<RGBColorBasic> ColorCompiler(RGBColor[] colorsIn)
+        private List<RGBColorBasic> ColorCompiler(List<RGBColor> colorsIn)
         {
             List<RGBColorBasic> colorsOut = new List<RGBColorBasic>();
-            RGBColor currentColor = colorsIn[0];
-            RGBColor nextColor = colorsIn[1];
+            RGBColor CurrentColor;
+            RGBColor NextColor;
             int dr;
             int dg;
             int db;
@@ -166,24 +169,24 @@ namespace GUI_csharp
             {
                 if(index + 1 == colorsIn.Count())
                 {
-                    nextColor = colorsIn[0];
+                    NextColor = colorsIn[0];
                 }
                 else
                 {
-                    nextColor = colorsIn[index + 1];
+                    NextColor = colorsIn[index + 1];
                 }
-                currentColor = colorsIn[index];
-                dr = (currentColor._r - nextColor._r)/currentColor._transitionFrames;
-                dg = (currentColor._g - nextColor._g)/ currentColor._transitionFrames;
-                db = (currentColor._b - nextColor._b)/ currentColor._transitionFrames;
-                rs.Add(currentColor._r);
-                gs.Add(currentColor._g);
-                bs.Add(currentColor._b);
-                for (int index2 = 0; index2 < currentColor._transitionFrames; index2++)
+                CurrentColor = colorsIn[index];
+                dr = (CurrentColor._r - NextColor._r)/ CurrentColor._transitionFrames;
+                dg = (CurrentColor._g - NextColor._g)/ CurrentColor._transitionFrames;
+                db = (CurrentColor._b - NextColor._b)/ CurrentColor._transitionFrames;
+                rs.Add(CurrentColor._r);
+                gs.Add(CurrentColor._g);
+                bs.Add(CurrentColor._b);
+                for (int index2 = 0; index2 < CurrentColor._transitionFrames; index2++)
                 {
-                    rs.Add(currentColor._r + (index2 * dr));
-                    gs.Add(currentColor._g + (index2 * dg));
-                    bs.Add(currentColor._b + (index2 * db));
+                    rs.Add(CurrentColor._r + (index2 * dr));
+                    gs.Add(CurrentColor._g + (index2 * dg));
+                    bs.Add(CurrentColor._b + (index2 * db));
                 }
             }
             for(int index3 = 0; index3 < rs.Count; index3++)
