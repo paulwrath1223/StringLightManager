@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
+using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace GUI_csharp
 {
@@ -25,7 +27,11 @@ namespace GUI_csharp
             colorsPanel.Visible = false;
             Add_Arduino();
             Control l = FindControl(groupBoxes[0], "Speed"); ;
-            l.Text = "ahoj";
+            l.Text = "Speed";
+            Debug.WriteLine(ArdToJson(arduinos[0]));
+            Debug.Flush();
+
+
         }
 
         private void Add_Arduino()
@@ -139,7 +145,50 @@ namespace GUI_csharp
             }
         }
 
-        private void buttonColorEdit_Click(object sender, EventArgs e)
+        private string ArdToJson(Arduino ard)
+        {
+            string jsonOut = JsonConvert.SerializeObject(ard);
+            return jsonOut;
+        }
+
+        private void ColorCompiler(RGBColor[] colorsIn)
+        {
+            List<int> rs = new List<int>();
+            List<int> gs = new List<int>();
+            List<int> bs = new List<int>();
+            for (int index = 0; index < colorsIn.Count(); index++)
+            {
+                if(index + 1 == colorsIn.Count())
+                {
+                    RGBColor nextColor = colorsIn[0];
+                }
+                else
+                {
+                    RGBColor nextColor = colorsIn[index + 1];
+                }
+                RGBColor currentColor = colorsIn[index];
+                rs.Add(currentColor._r);
+                gs.Add(currentColor._g);
+                bs.Add(currentColor._b);
+                for (int index2 = 0; index2 < currentColor._transitionFrames; index2++)
+                {
+
+                }
+            }
+        }
+
+        private string ArdJsonCompiler(string[] ards)
+        {
+            string output = "{\"Arduino\":\n [";
+            for (int index = 0; index < (ards.Count())-1; index++)
+            {
+                output += (ards[index] + ",\n    {");
+            }
+            output += (ards[ards.Count()] + "\n  ]\n}");
+            return output;
+        }
+
+            private void buttonColorEdit_Click(object sender, EventArgs e)
         {
             int id = getId(sender);
             arduinoPanel.Visible = false;
