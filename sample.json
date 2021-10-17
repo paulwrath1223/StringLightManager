@@ -1,42 +1,192 @@
 {
   "Arduino0" : {
-    "colorData" : "[(100, 200, 100)]",
-    "mode" : 0
+    "colorLength" : 3,
+    "colors" : [ {
+      "b" : 100,
+      "g" : 200,
+      "r" : 100
+    }, {
+      "b" : 200,
+      "g" : 100,
+      "r" : 100
+    }, {
+      "b" : 100,
+      "g" : 100,
+      "r" : 200
+    } ],
+    "mode" : 0,
+    "numLights" : 12,
+    "update" : 1
   },
   "Arduino1" : {
-    "colorData" : "[(100, 100, 200)]",
-    "mode" : 0
+    "colorLength" : 3,
+    "colors" : [ {
+      "b" : 100,
+      "g" : 200,
+      "r" : 100
+    }, {
+      "b" : 200,
+      "g" : 100,
+      "r" : 100
+    }, {
+      "b" : 100,
+      "g" : 100,
+      "r" : 200
+    } ],
+    "mode" : 0,
+    "numLights" : 12,
+    "update" : 1
   },
   "Arduino2" : {
-    "colorData" : "[(100, 100, 200)]",
-    "mode" : 0
+    "colorLength" : 3,
+    "colors" : [ {
+      "b" : 100,
+      "g" : 200,
+      "r" : 100
+    }, {
+      "b" : 200,
+      "g" : 100,
+      "r" : 100
+    }, {
+      "b" : 100,
+      "g" : 100,
+      "r" : 200
+    } ],
+    "mode" : 0,
+    "numLights" : 12,
+    "update" : 1
   },
   "Arduino3" : {
-    "colorData" : "[(100, 100, 200)]",
-    "mode" : 0
+    "colorLength" : 3,
+    "colors" : [ {
+      "b" : 100,
+      "g" : 200,
+      "r" : 100
+    }, {
+      "b" : 200,
+      "g" : 100,
+      "r" : 100
+    }, {
+      "b" : 100,
+      "g" : 100,
+      "r" : 200
+    } ],
+    "mode" : 0,
+    "numLights" : 12,
+    "update" : 1
   },
   "Arduino4" : {
-    "colorData" : "[(100, 100, 200)]",
-    "mode" : 0
+    "colorLength" : 3,
+    "colors" : [ {
+      "b" : 100,
+      "g" : 200,
+      "r" : 100
+    }, {
+      "b" : 200,
+      "g" : 100,
+      "r" : 100
+    }, {
+      "b" : 100,
+      "g" : 100,
+      "r" : 200
+    } ],
+    "mode" : 0,
+    "numLights" : 12,
+    "update" : 1
   },
   "Arduino5" : {
-    "colorData" : "[(100, 100, 200)]",
-    "mode" : 0
+    "colorLength" : 3,
+    "colors" : [ {
+      "b" : 100,
+      "g" : 200,
+      "r" : 100
+    }, {
+      "b" : 200,
+      "g" : 100,
+      "r" : 100
+    }, {
+      "b" : 100,
+      "g" : 100,
+      "r" : 200
+    } ],
+    "mode" : 0,
+    "numLights" : 12,
+    "update" : 1
   },
   "Arduino6" : {
-    "colorData" : "[(100, 100, 200)]",
-    "mode" : 0
+    "colorLength" : 3,
+    "colors" : [ {
+      "b" : 100,
+      "g" : 200,
+      "r" : 100
+    }, {
+      "b" : 200,
+      "g" : 100,
+      "r" : 100
+    }, {
+      "b" : 100,
+      "g" : 100,
+      "r" : 200
+    } ],
+    "mode" : 0,
+    "numLights" : 12,
+    "update" : 1
   },
   "Arduino7" : {
-    "colorData" : "[(100, 100, 200)]",
-    "mode" : 0
+    "colorLength" : 3,
+    "colors" : [ {
+      "b" : 100,
+      "g" : 200,
+      "r" : 100
+    }, {
+      "b" : 200,
+      "g" : 100,
+      "r" : 100
+    }, {
+      "b" : 100,
+      "g" : 100,
+      "r" : 200
+    } ],
+    "mode" : 0,
+    "numLights" : 12,
+    "update" : 1
   },
   "Arduino8" : {
-    "colorData" : "[(100, 100, 200)]",
-    "mode" : 0
+    "colorLength" : 3,
+    "colors" : [ {
+      "b" : 100,
+      "g" : 200,
+      "r" : 100
+    }, {
+      "b" : 200,
+      "g" : 100,
+      "r" : 100
+    }, {
+      "b" : 100,
+      "g" : 100,
+      "r" : 200
+    } ],
+    "mode" : 0,
+    "numLights" : 12,
+    "update" : 1
   },
   "Arduino9" : {
-    "colorData" : "[(100, 100, 200)]",
-    "mode" : 0
+    "colorLength" : 3,
+    "colors" : [ {
+      "b" : 100,
+      "g" : 200,
+      "r" : 100
+    }, {
+      "b" : 200,
+      "g" : 100,
+      "r" : 100
+    }, {
+      "b" : 100,
+      "g" : 100,
+      "r" : 200
+    } ],
+    "mode" : 0,
+    "numLights" : 12,
+    "update" : 1
   }
 }
