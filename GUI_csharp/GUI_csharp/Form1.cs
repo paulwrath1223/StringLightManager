@@ -151,8 +151,14 @@ namespace GUI_csharp
             return jsonOut;
         }
 
-        private void ColorCompiler(RGBColor[] colorsIn)
+        private RGBColorBasic[] ColorCompiler(RGBColor[] colorsIn)
         {
+            List<RGBColorBasic> colorsOut = new List<RGBColorBasic>();
+            RGBColor currentColor = colorsIn[0];
+            RGBColor nextColor = colorsIn[1];
+            int dr;
+            int dg;
+            int db;
             List<int> rs = new List<int>();
             List<int> gs = new List<int>();
             List<int> bs = new List<int>();
@@ -160,19 +166,24 @@ namespace GUI_csharp
             {
                 if(index + 1 == colorsIn.Count())
                 {
-                    RGBColor nextColor = colorsIn[0];
+                    nextColor = colorsIn[0];
                 }
                 else
                 {
-                    RGBColor nextColor = colorsIn[index + 1];
+                    nextColor = colorsIn[index + 1];
                 }
-                RGBColor currentColor = colorsIn[index];
+                currentColor = colorsIn[index];
+                dr = (currentColor._r - nextColor._r)/currentColor._transitionFrames;
+                dg = (currentColor._g - nextColor._g)/ currentColor._transitionFrames;
+                db = (currentColor._b - nextColor._b)/ currentColor._transitionFrames;
                 rs.Add(currentColor._r);
                 gs.Add(currentColor._g);
                 bs.Add(currentColor._b);
                 for (int index2 = 0; index2 < currentColor._transitionFrames; index2++)
                 {
-
+                    rs.Add(currentColor._r + (index2 * dr));
+                    gs.Add(currentColor._g + (index2 * dg));
+                    bs.Add(currentColor._b + (index2 * db));
                 }
             }
         }
