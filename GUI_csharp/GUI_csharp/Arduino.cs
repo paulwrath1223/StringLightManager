@@ -11,7 +11,6 @@ namespace GUI_csharp
         public int _id;
         public double _speed;
         public int _length;
-        public bool _update = true;
         public List<RGBColor> _colorList = new List<RGBColor>();
 
         public Arduino(int id)

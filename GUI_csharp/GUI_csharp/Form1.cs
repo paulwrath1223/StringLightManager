@@ -151,7 +151,7 @@ namespace GUI_csharp
             return jsonOut;
         }
 
-        private RGBColorBasic[] ColorCompiler(RGBColor[] colorsIn)
+        private List<RGBColorBasic> ColorCompiler(RGBColor[] colorsIn)
         {
             List<RGBColorBasic> colorsOut = new List<RGBColorBasic>();
             RGBColor currentColor = colorsIn[0];
@@ -186,6 +186,11 @@ namespace GUI_csharp
                     bs.Add(currentColor._b + (index2 * db));
                 }
             }
+            for(int index3 = 0; index3 < rs.Count; index3++)
+            {
+                colorsOut.Add(new RGBColorBasic(rs[index3], gs[index3], bs[index3]));
+            }
+            return colorsOut;
         }
 
         private string ArdJsonCompiler(string[] ards)
