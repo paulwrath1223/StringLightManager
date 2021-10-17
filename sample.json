@@ -1,0 +1,42 @@
+{
+  "Arduino0" : {
+    "colorData" : "[(100, 200, 100)]",
+    "mode" : 0
+  },
+  "Arduino1" : {
+    "colorData" : "[(100, 100, 200)]",
+    "mode" : 0
+  },
+  "Arduino2" : {
+    "colorData" : "[(100, 100, 200)]",
+    "mode" : 0
+  },
+  "Arduino3" : {
+    "colorData" : "[(100, 100, 200)]",
+    "mode" : 0
+  },
+  "Arduino4" : {
+    "colorData" : "[(100, 100, 200)]",
+    "mode" : 0
+  },
+  "Arduino5" : {
+    "colorData" : "[(100, 100, 200)]",
+    "mode" : 0
+  },
+  "Arduino6" : {
+    "colorData" : "[(100, 100, 200)]",
+    "mode" : 0
+  },
+  "Arduino7" : {
+    "colorData" : "[(100, 100, 200)]",
+    "mode" : 0
+  },
+  "Arduino8" : {
+    "colorData" : "[(100, 100, 200)]",
+    "mode" : 0
+  },
+  "Arduino9" : {
+    "colorData" : "[(100, 100, 200)]",
+    "mode" : 0
+  }
+}
