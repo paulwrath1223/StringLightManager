@@ -33,13 +33,13 @@ unsigned long count = 0;
 String basePath = "/Arduino0";
 
 
-#define PIN 0
+#define PIN 2
 
 
 Adafruit_NeoPixel pixels(1, PIN, NEO_GRB + NEO_KHZ800);
 
 
-int mode = 0; // 0 means solic color, 1 means wave.
+float speed = 0; // 0 means solic color, 1 means wave.
 int numPixels = 1;
 int r;
 int g;
@@ -47,9 +47,11 @@ int b;
 int numColors;
 int updateCounter;
 int lastNumColors;
+float timing = 0;
+int update = 1;
 
 String path;
-String modePath;
+String speedPath;
 String lightLengthPath;
 String colorLengthPath;
 String colorPath;
@@ -62,7 +64,7 @@ uint32_t* colorList = 0;
 void setup()
 {
   updatePath = basePath + "/update";
-  modePath = basePath + "/mode";
+  speedPath = basePath + "/speed";
   lightLengthPath = basePath + "/numLights";
   colorLengthPath = basePath + "/colorLength";
   colorPath = basePath+"/colors";
@@ -104,56 +106,47 @@ void setup()
 
   Firebase.setDoubleDigits(5);
 
-  updateCloud()
+  updateCloud();
 }
 
 void loop()
 {
   if(updateCounter > 1000)
   {
-    updateCloud()
+    updateCloud();
     updateCounter = 0;
   }
   //Flash string (PROGMEM and  (FPSTR), String,, String C/C++ string, const char, char array, string literal are supported
   //in all Firebase and FirebaseJson functions, unless F() macro is not supported
 
-  if(mode==0) // set color mode
+  timing += speed;
+  if(timing > 1)
   {
-    for(int i=0; i<numPixels; i++) { // For each pixel...
-
-    // pixels.Color() takes RGB values, from 0,0,0 up to 255,255,255
-    // Here we're using a moderately bright green color:
-
-    pixels.setPixelColor(i, colorList[(i % numColors)]);
-
-    pixels.show();   // Send the updated pixel colors to the hardware.
-
-    }
+    timing-=1;
+    waveOffset++;
   }
-  else if(mode==1) // wave mode
+  if( !(waveOffset < numColors))  // >=
   {
-    if( !(waveOffset < numColors))
-    {
-      waveOffset = 0;
-    }
-    for(int i=0; i<numPixels; i++)  // For each pixel...
-    {
-        pixels.setPixelColor(i, colorList[((i + waveOffset) % numColors)]);
-        pixels.show();   // Send the updated pixel colors to the hardware.
-        waveOffset++;
-    }
+    waveOffset = 0;
+  }
+  for(int i=0; i<numPixels; i++)  // For each pixel...
+  {
+      pixels.setPixelColor(i, colorList[((i + waveOffset) % numColors)]);
+      pixels.show();   // Send the updated pixel colors to the hardware.
   }
   updateCounter++;
 }
 
 
+
+
 void updateCloud()
 {
-    update = Firebase.getInt(fbdo, updatePath)
+    update = Firebase.getInt(fbdo, updatePath);
     if(update == 1)
     {
-        mode = Firebase.getInt(fbdo, modePath);
-        lastNumColors = numColors
+        speed = Firebase.getInt(fbdo, speedPath);
+        lastNumColors = numColors;
         numColors = Firebase.getInt(fbdo, colorLengthPath);
         if( ! (lastNumColors == numColors))
         {

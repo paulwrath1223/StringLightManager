@@ -10,16 +10,18 @@ namespace GUI_csharp
 	{
 		public int ID = 0;
 		public double speed = 0;
-		public int length = 0;
+		public int colorLength = 0;
 		public bool update = true;
+		public int numLights = 0;
 		public List<RGBColorBasic> colors = new List<RGBColorBasic>();
 
 		public JsonArduino(Arduino joe, List<RGBColorBasic> cs)
 		{
 			ID = joe._id;
 			speed = joe._speed;
-			length = joe._length;
+			numLights = joe._length;
 			colors = cs;
+			colorLength = cs.Count;
 		}
 
 
