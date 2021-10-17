@@ -13,6 +13,8 @@ namespace GUI_csharp
 {
     public partial class Form1 : Form
     {
+        private List<GroupBox> groupBoxes = new List<GroupBox>();
+        private List<Arduino> arduinos = new List<Arduino>();
         public Form1()
         {
             InitializeComponent();
@@ -20,8 +22,128 @@ namespace GUI_csharp
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Console.WriteLine("Everything working");
-            panel1.Visible = false;
+            colorsPanel.Visible = false;
+            Add_Arduino();
+            Control l = FindControl(groupBoxes[0], "Speed"); ;
+            l.Text = "ahoj";
+        }
+
+        private void Add_Arduino()
+        {
+            GroupBox gb = new GroupBox();
+            arduinoPanel.Controls.Add(gb);
+
+            Label speed = new Label();
+            TextBox speedInput = new TextBox();
+            Button speedEdit = new Button();
+            Label length = new Label();
+            ListBox colorList = new ListBox();
+            Button colorEdit = new Button();
+
+            gb.Controls.Add(speed);
+            gb.Controls.Add(speedInput);
+            gb.Controls.Add(speedEdit);
+            gb.Controls.Add(length);
+            gb.Controls.Add(colorList);
+            gb.Controls.Add(colorEdit);
+
+            speed.Location = new System.Drawing.Point(35, 30);
+            speed.Size = new System.Drawing.Size(80, 20);
+            speed.Text = "Speed: ";
+            speed.Name = "Speed";
+            speedInput.Location = new System.Drawing.Point(120, 30);
+            speedInput.Size = new System.Drawing.Size(50, 20);
+            speedInput.Name = "SpeedInput";
+            speedEdit.Location = new System.Drawing.Point(185, 30);
+            speedEdit.Text = "edit";
+            speedEdit.Name = "SpeedEdit_" + groupBoxes.Count.ToString();
+            speedEdit.Size = new System.Drawing.Size(40, 20);
+            speedEdit.Click += new System.EventHandler(this.buttonSpeedEdit_Click);
+            length.Location = new System.Drawing.Point(35, 60);
+            length.Text = "Length: 0";
+            length.Name = "Length";
+            colorList.Location = new System.Drawing.Point(250, 10);
+            colorList.Size = new System.Drawing.Size(150, 100);
+            colorList.Name = "ColorList";
+            colorEdit.Location = new System.Drawing.Point(420, 30);
+            colorEdit.Text = "edit";
+            colorEdit.Name = "ColorEdit_" + groupBoxes.Count.ToString();
+            colorEdit.Size = new System.Drawing.Size(40, 20);
+            colorEdit.Click += new System.EventHandler(this.buttonColorEdit_Click);
+
+            gb.Location = new System.Drawing.Point(25, 200);
+            gb.Size = new System.Drawing.Size(450, 125);
+            gb.Text = "Arduino" + groupBoxes.Count;
+            gb.BackColor = System.Drawing.SystemColors.ActiveBorder;
+
+            groupBoxes.Add(gb);
+            arduinos.Add(new Arduino(arduinos.Count));
+        }
+
+        public static Control FindControl(/*this*/ Control parent, string name)
+        {
+            if (parent == null || string.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+
+            Control[] controls = parent.Controls.Find(name, true);
+            if (controls.Length > 0)
+            {
+                return controls[0];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+
+        private int getId(object sender)
+        {
+            //Getting id of the groupbox
+            int id;
+            var b = (Button)sender;
+            string[] id_string = b.Name.Split('_');
+
+            if (!int.TryParse(id_string[1], out id))
+            {
+                Console.WriteLine("Button id could not be read!");
+                return 0;
+            }
+            else
+            {
+                return id;
+            }
+        }
+        private void buttonSpeedEdit_Click(object sender, EventArgs e)
+        {
+            //extracting textBox value and converting to double, updating groupBox controls
+            int id = getId(sender);
+            Control textBox = FindControl(groupBoxes[id], "SpeedInput");
+            Control label = FindControl(groupBoxes[id], "Speed");
+            int speed;
+            if (!int.TryParse(textBox.Text, out speed))
+                textBox.Text = "";
+            else
+            {
+                double dSpeed =  speed/Math.Pow(10, textBox.Text.Length);
+                Console.WriteLine(dSpeed);
+                if (dSpeed > 1 || dSpeed < 0)
+                    textBox.Text = "";
+                else
+                {
+                    label.Text = "Speed: " + dSpeed.ToString();
+                    arduinos[id]._speed = dSpeed;
+                }
+            }
+        }
+
+        private void buttonColorEdit_Click(object sender, EventArgs e)
+        {
+            int id = getId(sender);
+            arduinoPanel.Visible = false;
+            colorsPanel.Visible = true;
         }
     }
 }
