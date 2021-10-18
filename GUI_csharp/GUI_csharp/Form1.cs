@@ -406,7 +406,7 @@ namespace GUI_csharp
         #endregion
 
         #region JsonConvertor
-        private string ArdToJson(Arduino ard)
+
         private async void GetLength(int id)
         {
             FirebaseResponse response = await client.GetAsync("Arduino/" + id);
@@ -494,17 +494,6 @@ namespace GUI_csharp
             }
             return colorsOut;
         }
-
-        //private string ArdJsonCompiler(string[] ards)
-        //{
-        //    string output = "{\"Arduino\":\n [";
-        //    for (int index = 0; index < (ards.Count())-1; index++)
-        //    {
-        //        output += (ards[index] + ",\n    {");
-        //    }
-        //    output += (ards[ards.Count()] + "\n  ]\n}");
-        //    return output;
-        //}
 
 
         private Arduino OpenArduino ()
