@@ -50,10 +50,6 @@ namespace GUI_csharp
                 MessageBox.Show("failed to connect to database");
             }
 
-            colorsPanel.Visible = false;
-            Add_Arduino();
-            Control l = FindControl(groupBoxes[0], "Speed"); ;
-            l.Text = "Speed";
             Init();
             Add_ColorGroupBox();
             groupBoxColorsChangeLocation();
@@ -123,6 +119,7 @@ namespace GUI_csharp
                 return null;
             }
         }
+
 
         #region ColorsPanel
 
@@ -425,12 +422,6 @@ namespace GUI_csharp
             }
         }
 
-        private void buttonColorEdit_Click(object sender, EventArgs e)
-        {
-            int id = getId(sender);
-            arduinoPanel.Visible = false;
-            colorsPanel.Visible = true;
-        }
         #endregion
     }
 }
