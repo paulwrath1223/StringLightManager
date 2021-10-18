@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,14 +9,25 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
-//using Newtonsoft.json;
+using Newtonsoft.Json;
 using System.Diagnostics;
+using FireSharp.Config;
+using FireSharp.Interfaces;
+using FireSharp.Response;
 using Google.Api.Gax.ResourceNames;
+
 
 namespace GUI_csharp
 {
     public partial class Form1 : Form
     {
+        IFirebaseConfig config = new FirebaseConfig
+        {
+            AuthSecret = "xnsxVJEbZchsxN2XPCkxAPhlZXdvWBt318oq98jh",
+            BasePath = "https://light-data1-default-rtdb.firebaseio.com/"
+        };
+        IFirebaseClient client;
+
         private List<GroupBox> groupBoxes = new List<GroupBox>();
         private List<Arduino> arduinos = new List<Arduino>();
         private int _usedId = 0;
@@ -32,6 +44,16 @@ namespace GUI_csharp
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            client = new FireSharp.FirebaseClient(config);
+            if(client == null)
+            {
+                MessageBox.Show("failed to connect to database");
+            }
+
+            colorsPanel.Visible = false;
+            Add_Arduino();
+            Control l = FindControl(groupBoxes[0], "Speed"); ;
+            l.Text = "Speed";
             Init();
             Add_ColorGroupBox();
             groupBoxColorsChangeLocation();
@@ -283,14 +305,51 @@ namespace GUI_csharp
         
 
         #region JsonConvertor
-        private string ArdToJson(Arduino ard)
+
+        private async void GetLength(int id)
+        {
+            FirebaseResponse response = await client.GetAsync("Arduino/" + id);
+            Data obj = response.ResultAs<Data>();
+            return obj.numLights;
+        }
+
+        private async void UploadArduino(Arduino ard)
         {
             List<RGBColorBasic> tempColors = new List<RGBColorBasic>();
             tempColors = ColorCompiler(ard._colorList);
-            JsonArduino temp = new JsonArduino(ard, tempColors);
+            //JsonArduino temp = new JsonArduino(ard, tempColors);
             //string jsonOut = JsonConvert.SerializeObject(temp);
-            //return jsonOut;
-            return "correct this";
+
+            var data = new Data
+            {
+                colorLength = tempColors.Count,
+                colors = tempColors,
+                speed = ard._speed,
+                numLights = ard._length,
+                update = true
+            };
+
+            FirebaseResponse response = await client.GetAsync("Arduino/" + ard._id);
+            Data obj = response.ResultAs<Data>();
+
+
+            if (obj != null)
+            {
+                FirebaseResponse response1 = await client.UpdateAsync("Arduino/" + ard._id, data);
+                response1.ResultAs<Data>();
+
+                MessageBox.Show("Arduino " + ard._id + " updated.");
+            }
+            else
+            {
+
+                //if id does not yet exist
+                SetResponse response1 = await client.SetAsync("Arduino/" + ard._id, data);
+                response1.ResultAs<Data>();
+
+                MessageBox.Show("Arduino " + ard._id + " created.");
+
+            }
         }
 
         private List<RGBColorBasic> ColorCompiler(List<RGBColor> colorsIn)
@@ -335,15 +394,42 @@ namespace GUI_csharp
             return colorsOut;
         }
 
-        private string ArdJsonCompiler(string[] ards)
+
+        private Arduino OpenArduino ()
         {
-            string output = "{\"Arduino\":\n [";
-            for (int index = 0; index < (ards.Count())-1; index++)
+            OpenFileDialog open = new OpenFileDialog();
+            open.Title = "Select file";
+            open.Filter = "Arduino Config Files (*.acf)|*.acf| All files (*.*)|*.*";
+            if(open.ShowDialog() == DialogResult.OK)
             {
-                output += (ards[index] + ",\n    {");
+                StreamReader read = new StreamReader(File.OpenRead(open.FileName));
+                string jsonForm = read.ReadToEnd();
+                read.Dispose();
+                Arduino arduin = JsonConvert.DeserializeObject<Arduino>(jsonForm);
+                return arduin;
             }
-            output += (ards[ards.Count()] + "\n  ]\n}");
-            return output;
+            return null;
+        }
+
+        private void saveArduino (Arduino input)
+        {
+            SaveFileDialog save = new SaveFileDialog();
+            save.Title = "Select save location";
+            save.Filter = "Arduino Config Files (*.acf)|*.acf| All files (*.*)|*.*";
+            if(save.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                StreamWriter write = new StreamWriter(File.Create(save.FileName));
+                string json = JsonConvert.SerializeObject(input);
+                write.Write(json);
+                write.Dispose();
+            }
+        }
+
+        private void buttonColorEdit_Click(object sender, EventArgs e)
+        {
+            int id = getId(sender);
+            arduinoPanel.Visible = false;
+            colorsPanel.Visible = true;
         }
         #endregion
     }

@@ -8,7 +8,7 @@ namespace GUI_csharp
 {
 	class JsonArduino
 	{
-		public int ID = 0;
+
 		public double speed = 0;
 		public int colorLength = 0;
 		public bool update = true;
@@ -17,7 +17,7 @@ namespace GUI_csharp
 
 		public JsonArduino(Arduino joe, List<RGBColorBasic> cs)
 		{
-			ID = joe._id;
+
 			speed = joe._speed;
 			numLights = joe._length;
 			colors = cs;
