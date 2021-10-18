@@ -264,6 +264,26 @@ namespace GUI_csharp
             return rgb;
         }
 
+        private string RGBtoString(int[] rgb)
+        {
+            string strRGB = "RGB("+ rgb[0]+","+rgb[1]+","+rgb[2]+")";
+            //foreach (var value in rgb)
+            //{
+            //    strRGB += value.ToString() + ",";
+            //}
+
+            //string a = "";
+            //for (int i = 0; i < strRGB.Length; i++)
+            //{
+            //    if (i == strRGB.Length - 1)
+            //        a += ")";
+            //    else
+            //        a += strRGB[i];
+            //}
+            //return a;
+            return strRGB;
+        }
+
         private void bttn_Delete_Click(object sender, EventArgs e)
         {
             int id = getId(sender);
@@ -340,6 +360,18 @@ namespace GUI_csharp
         }
         #endregion
 
+        private void updateColorsPanelFromData()
+        {
+            cb_arduinoID.Text = _arduino._id.ToString();
+            lbl_Speed.Text = "Speed: " + _arduino._speed;
+            for (int i = 0; i < _arduino._colorList.Count; i++)
+            {
+                Add_ColorGroupBox();
+                groupBoxes[i].Text = RGBtoString(_arduino._colorList[i]._rgb);
+                Control lbl_
+            }
+
+        }
         private void printArduino()
         {
             Console.WriteLine("Arduino" + _arduino._id);
