@@ -90,7 +90,7 @@ namespace GUI_csharp
         {
             List<Item> items = new List<Item>();
             items.Add(new Item() { Text = "choose ID", Value = null });
-            for (int counter = 0; counter < 10; counter++)
+            for (int counter = 0; counter < 20; counter++)
             {
                 items.Add(new Item() { Text = counter.ToString(), Value = counter.ToString() });
             }

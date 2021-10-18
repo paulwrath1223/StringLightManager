@@ -55,7 +55,7 @@ namespace GUI_csharp
             // 
             this.colorsPanel.AutoScroll = true;
             this.colorsPanel.Controls.Add(this.bttn_Add);
-            this.colorsPanel.Location = new System.Drawing.Point(363, 248);
+            this.colorsPanel.Location = new System.Drawing.Point(162, 250);
             this.colorsPanel.Margin = new System.Windows.Forms.Padding(5);
             this.colorsPanel.Name = "colorsPanel";
             this.colorsPanel.Size = new System.Drawing.Size(1357, 782);
