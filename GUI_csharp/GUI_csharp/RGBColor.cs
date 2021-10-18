@@ -8,7 +8,7 @@ namespace GUI_csharp
 {
     class RGBColor
     {
-        private int[] _rgb = { 0, 0, 0 };
+        public int[] _rgb = { 0, 0, 0 };
         public int _r = 0;
         public int _g = 0;
         public int _b = 0;
