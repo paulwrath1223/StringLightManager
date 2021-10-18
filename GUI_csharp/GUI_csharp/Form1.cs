@@ -51,6 +51,7 @@ namespace GUI_csharp
                 MessageBox.Show("failed to connect to database");
             }
 
+
             Init();
             Add_ColorGroupBox();
             groupBoxColorsChangeLocation();
@@ -89,10 +90,11 @@ namespace GUI_csharp
         {
             List<Item> items = new List<Item>();
             items.Add(new Item() { Text = "choose ID", Value = null });
-            items.Add(new Item() { Text = "1", Value = "1" });
-            items.Add(new Item() { Text = "2", Value = "2" });
-            items.Add(new Item() { Text = "3", Value = "3" });
-            items.Add(new Item() { Text = "4", Value = "4" });
+            for (int counter = 0; counter < 10; counter++)
+            {
+                items.Add(new Item() { Text = counter.ToString(), Value = counter.ToString() });
+            }
+
 
 
             cb_arduinoID.DataSource = items;
@@ -126,6 +128,7 @@ namespace GUI_csharp
                     lbl_Speed.Text = "Speed: " + dSpeed.ToString();
                     _arduino._speed = dSpeed;
                     _arduino._id = getIdFromDropDown();
+
                 }
             }
         }
@@ -340,17 +343,18 @@ namespace GUI_csharp
 
         private int getIdFromDropDown()
         {
+            
             string str_id = cb_arduinoID.Text;
+            Console.WriteLine("ID selected: ");
+            Console.WriteLine(str_id);
             int id = 0;
             if (!int.TryParse(str_id, out id))
             {
                 MessageBox.Show("Please choose valid id!");
                 return 0;
             }
-            else
-            {
-                return id;
-            }
+            return id;
+            
         }
 
         private void bttn_KeyFrames_Click(object sender, EventArgs e)
@@ -421,10 +425,14 @@ namespace GUI_csharp
 
         private async void GetLength(int id)
         {
+            Console.WriteLine("Get length for ID " + id);
             returnedLength = -1;
-            FirebaseResponse response = await client.GetAsync("Arduino/" + id);
+            FirebaseResponse response = await client.GetAsync("Arduino" + id + "/");
+            Console.WriteLine("response: " + response);
             Data obj = response.ResultAs<Data>();
+            Console.WriteLine("obj: " + obj);
             returnedLength = obj.numLights;
+            //returnedLength = 50;
         }
 
         private async void UploadArduino(object sender, EventArgs e)
@@ -517,6 +525,8 @@ namespace GUI_csharp
                 Arduino arduin = JsonConvert.DeserializeObject<Arduino>(jsonForm);
                 _arduino = arduin;
             }
+            Console.WriteLine("Arduino opened");
+            updateLengthFromId();
 
         }
 
@@ -534,10 +544,44 @@ namespace GUI_csharp
             }
         }
 
-
-
-
         #endregion
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            int.TryParse(lengthTextBox.Text, out _arduino._length);
+            lengthLabel.Text = "length: " + _arduino._length.ToString(); 
+        }
+
+        
+        private async void updateLengthFromId()
+        {
+            GetLength(getIdFromDropDown());
+            int dotCount = 0;
+            string loadingText = "Loading";
+            while (returnedLength == -1)
+            {
+                dotCount++;
+                if (dotCount == 4)
+                {
+                    dotCount = 0;
+                    loadingText = "Loading";
+                }
+                loadingText += ".";
+                await Task.Delay(25);
+                lengthLabel.Text = loadingText;
+            }
+            _arduino._length = returnedLength;
+            lengthLabel.Text = "length: " + returnedLength.ToString();
+        }
+
+        private void cb_arduinoID_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Console.WriteLine("ID changed");
+            if (int.TryParse(cb_arduinoID.Text, out _arduino._id)) 
+            {
+                updateLengthFromId();
+            }
+        }
 
 
     }
