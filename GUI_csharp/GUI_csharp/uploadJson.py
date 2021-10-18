@@ -7,7 +7,7 @@ from firebase_admin import credentials
 import json
 
 # Opening JSON file
-f = open('sample.json', )
+f = open('temp.json', )
 
 # returns JSON object as
 # a dictionary

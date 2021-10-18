@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -10,6 +11,9 @@ using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using Firebase.Database;
+using Firebase.Database.Query;
+
 
 namespace GUI_csharp
 {
@@ -145,13 +149,13 @@ namespace GUI_csharp
             }
         }
 
-        private string ArdToJson(Arduino ard)
+        private void UploadArduino(Arduino ard)
         {
             List<RGBColorBasic> tempColors = new List<RGBColorBasic>();
             tempColors = ColorCompiler(ard._colorList);
             JsonArduino temp = new JsonArduino(ard, tempColors);
             string jsonOut = JsonConvert.SerializeObject(temp);
-            return jsonOut;
+            
         }
 
         private List<RGBColorBasic> ColorCompiler(List<RGBColor> colorsIn)
@@ -196,18 +200,49 @@ namespace GUI_csharp
             return colorsOut;
         }
 
-        private string ArdJsonCompiler(string[] ards)
+        //private string ArdJsonCompiler(string[] ards)
+        //{
+        //    string output = "{\"Arduino\":\n [";
+        //    for (int index = 0; index < (ards.Count())-1; index++)
+        //    {
+        //        output += (ards[index] + ",\n    {");
+        //    }
+        //    output += (ards[ards.Count()] + "\n  ]\n}");
+        //    return output;
+        //}
+
+
+        private Arduino OpenArduino ()
         {
-            string output = "{\"Arduino\":\n [";
-            for (int index = 0; index < (ards.Count())-1; index++)
+            OpenFileDialog open = new OpenFileDialog();
+            open.Title = "Select file";
+            open.Filter = "Arduino Config Files (*.acf)|*.acf| All files (*.*)|*.*";
+            if(open.ShowDialog() == DialogResult.OK)
             {
-                output += (ards[index] + ",\n    {");
+                StreamReader read = new StreamReader(File.OpenRead(open.FileName));
+                string jsonForm = read.ReadToEnd();
+                read.Dispose();
+                Arduino arduin = JsonConvert.DeserializeObject<Arduino>(jsonForm);
+                return arduin;
             }
-            output += (ards[ards.Count()] + "\n  ]\n}");
-            return output;
+            return null;
         }
 
-            private void buttonColorEdit_Click(object sender, EventArgs e)
+        private void saveArduino (Arduino input)
+        {
+            SaveFileDialog save = new SaveFileDialog();
+            save.Title = "Select save location";
+            save.Filter = "Arduino Config Files (*.acf)|*.acf| All files (*.*)|*.*";
+            if(save.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                StreamWriter write = new StreamWriter(File.Create(save.FileName));
+                string json = JsonConvert.SerializeObject(input);
+                write.Write(json);
+                write.Dispose();
+            }
+        }
+
+        private void buttonColorEdit_Click(object sender, EventArgs e)
         {
             int id = getId(sender);
             arduinoPanel.Visible = false;
