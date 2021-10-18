@@ -14,7 +14,7 @@ using System.Diagnostics;
 using FireSharp.Config;
 using FireSharp.Interfaces;
 using FireSharp.Response;
-using Google.Api.Gax.ResourceNames;
+//using Google.Api.Gax.ResourceNames;
 
 
 namespace GUI_csharp
@@ -53,7 +53,7 @@ namespace GUI_csharp
 
 
             Init();
-            Add_ColorGroupBox();
+            //Add_ColorGroupBox();
             groupBoxColorsChangeLocation();
             //Debug.WriteLine(ArdToJson(arduinos[0]));
             //Debug.Flush();
@@ -127,7 +127,7 @@ namespace GUI_csharp
                 {
                     lbl_Speed.Text = "Speed: " + dSpeed.ToString();
                     _arduino._speed = dSpeed;
-                    _arduino._id = getIdFromDropDown();
+                    //_arduino._id = getIdFromDropDown();
 
                 }
             }
@@ -154,6 +154,22 @@ namespace GUI_csharp
 
 
         #region ColorsPanel
+
+        private void Add_AddButton()
+        {
+            Button bttn_Add = new Button();
+            colorsPanel.Controls.Add(bttn_Add);
+            bttn_Add.Font = new System.Drawing.Font("Microsoft Sans Serif", 25.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            bttn_Add.ForeColor = System.Drawing.Color.Green;
+            bttn_Add.Location = new System.Drawing.Point(30, 30);
+            bttn_Add.Margin = new System.Windows.Forms.Padding(5);
+            bttn_Add.Name = "bttn_Add";
+            bttn_Add.Size = new System.Drawing.Size(70, 60);
+            bttn_Add.TabIndex = 2;
+            bttn_Add.Text = "+";
+            bttn_Add.UseVisualStyleBackColor = true;
+            bttn_Add.Click += new System.EventHandler(this.bttn_Add_Click);
+        }
 
         private void Add_ColorGroupBox()
         {
@@ -207,7 +223,6 @@ namespace GUI_csharp
             gb.Location = new Point(30, 150);
 
             int[] rgb = {255, 255, 255};
-            _arduino._colorList.Add(new RGBColor(rgb[0], rgb[1], rgb[2], 0));
             groupBoxes.Add(gb);
             _usedId++;
         }
@@ -337,25 +352,25 @@ namespace GUI_csharp
         private void bttn_Add_Click(object sender, EventArgs e)
         {
             Add_ColorGroupBox();
+            _arduino._colorList.Add(new RGBColor(255, 255, 255, 0));
             groupBoxColorsChangeLocation();
             printArduino();
         }
 
-        private int getIdFromDropDown()
-        {
+        //private int getIdFromDropDown()
+        //{
             
-            string str_id = cb_arduinoID.Text;
-            Console.WriteLine("ID selected: ");
-            Console.WriteLine(str_id);
-            int id = 0;
-            if (!int.TryParse(str_id, out id))
-            {
-                MessageBox.Show("Please choose valid id!");
-                return 0;
-            }
-            return id;
+        //    string str_id = cb_arduinoID.Text;
+        //    Console.WriteLine("ID selected: "+str_id);
+        //    int id = 0;
+        //    if (!int.TryParse(str_id, out id))
+        //    {
+        //        MessageBox.Show("Please choose valid id!");
+        //        return 0;
+        //    }
+        //    return id;
             
-        }
+        //}
 
         private void bttn_KeyFrames_Click(object sender, EventArgs e)
         {
@@ -384,6 +399,7 @@ namespace GUI_csharp
                 groupBoxes[i].Location = new Point(30, 20 + i * (_gbSize.Height + 10));
             }
 
+            Control bttn_Add = FindControl(colorsPanel, "bttn_Add");
             bttn_Add.Location = new Point((_gbSize.Width+bttn_Add.Size.Width/2)/2, 20 + groupBoxes.Count * (_gbSize.Height + 10));
             colorsPanel.AutoScroll = true;
         }
@@ -391,8 +407,13 @@ namespace GUI_csharp
 
         private void updateColorsPanelFromData()
         {
+            groupBoxes.Clear();
+            colorsPanel.Controls.Clear();
+            Add_AddButton();
+            printArduino();
             cb_arduinoID.Text = _arduino._id.ToString();
             lbl_Speed.Text = "Speed: " + _arduino._speed;
+            //TODO: it is infinite loop...
             for (int i = 0; i < _arduino._colorList.Count; i++)
             {
                 Add_ColorGroupBox();
@@ -404,8 +425,10 @@ namespace GUI_csharp
                 Control lbl_KeyFrames = FindControl(groupBoxes[i], "lbl_KeyFrames");
                 lbl_KeyFrames.Text = _arduino._colorList[i]._transitionFrames.ToString();
             }
+            groupBoxColorsChangeLocation();
 
         }
+
         private void printArduino()
         {
             Console.WriteLine("Arduino" + _arduino._id);
@@ -527,6 +550,7 @@ namespace GUI_csharp
             }
             Console.WriteLine("Arduino opened");
             updateLengthFromId();
+            updateColorsPanelFromData();
 
         }
 
@@ -555,7 +579,8 @@ namespace GUI_csharp
         
         private async void updateLengthFromId()
         {
-            GetLength(getIdFromDropDown());
+            //GetLength(getIdFromDropDown());
+            GetLength(_arduino._id);
             int dotCount = 0;
             string loadingText = "Loading";
             while (returnedLength == -1)
