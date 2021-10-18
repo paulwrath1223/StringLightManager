@@ -34,6 +34,7 @@ namespace GUI_csharp
         {
             Init();
             Add_ColorGroupBox();
+            groupBoxColorsChangeLocation();
             //Debug.WriteLine(ArdToJson(arduinos[0]));
             //Debug.Flush();
 
@@ -110,9 +111,15 @@ namespace GUI_csharp
 
             Button bttn_ChangeColor = new Button();
             Button bttn_Delete = new Button();
+            Label lbl_KeyFrames = new Label();
+            TextBox tb_KeyFrames = new TextBox();
+            Button bttn_KeyFrames = new Button();
 
             gb.Controls.Add(bttn_ChangeColor);
             gb.Controls.Add(bttn_Delete);
+            gb.Controls.Add(lbl_KeyFrames);
+            gb.Controls.Add(tb_KeyFrames);
+            gb.Controls.Add(bttn_KeyFrames);
 
             bttn_ChangeColor.Text = "Change Color";
             bttn_ChangeColor.Name = "ChangeColor_"+_usedId.ToString();
@@ -127,6 +134,22 @@ namespace GUI_csharp
             bttn_Delete.BackColor = Color.Gray;
             bttn_Delete.Click += new System.EventHandler(bttn_Delete_Click);
 
+            lbl_KeyFrames.Text = "0";
+            lbl_KeyFrames.Location = new Point(_gbSize.Width / 2, _gbSize.Height / 2);
+            lbl_KeyFrames.Name = "lbl_KeyFrames";
+            lbl_KeyFrames.BackColor = Color.Gray;
+            lbl_KeyFrames.Size = new Size(60, 40);
+            lbl_KeyFrames.Font = new Font("Microsoft Sans Serif", 25.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+
+            tb_KeyFrames.Location = new Point(_gbSize.Width/2 - tb_KeyFrames.Size.Width/2, 20);
+            tb_KeyFrames.Name = "tb_KeyFrames";
+
+            bttn_KeyFrames.Text = "edit";
+            bttn_KeyFrames.Name = "KeyFrames_" + _usedId.ToString();
+            bttn_KeyFrames.Size = new Size(50, 30);
+            bttn_KeyFrames.Location = new Point(tb_KeyFrames.Location.X+tb_KeyFrames.Size.Width + 10, tb_KeyFrames.Location.Y);
+            bttn_KeyFrames.BackColor = Color.Gray;
+            bttn_KeyFrames.Click += new System.EventHandler(bttn_KeyFrames_Click);
 
             gb.Size = _gbSize;
             gb.Name = "Color_" + _usedId.ToString();
@@ -227,6 +250,24 @@ namespace GUI_csharp
             groupBoxColorsChangeLocation();
         }
 
+        private void bttn_KeyFrames_Click(object sender, EventArgs e)
+        {
+            int id = getId(sender);
+            int gb_index = getParentGroupBoxIndex(id);
+            Console.WriteLine("GB_index: "+gb_index);
+            int keyFrames;
+            Control tb_KeyFrames = FindControl(groupBoxes[gb_index], "tb_KeyFrames");
+            Control lbl_KeyFrames = FindControl(groupBoxes[gb_index], "lbl_KeyFrames");
+            if (int.TryParse(tb_KeyFrames.Text, out keyFrames))
+            {
+                lbl_KeyFrames.Text = keyFrames.ToString();
+                Console.WriteLine("KeyFrames: "+keyFrames);
+                //TODO: save to database
+            }
+            tb_KeyFrames.Text = "";
+
+        }
+
         private void groupBoxColorsChangeLocation()
         {
             colorsPanel.AutoScroll = false;
@@ -240,148 +281,6 @@ namespace GUI_csharp
         }
         #endregion
         
-        #region ArduinoPanel
-        private void buttonAdd_Click(object sender, EventArgs e)
-        {
-            Add_Arduino();
-            arduinoChangeLocations();
-        }
-        private void Add_Arduino()
-        {
-            GroupBox gb = new GroupBox();
-            arduinoPanel.Controls.Add(gb);
-
-            Label speed = new Label();
-            TextBox speedInput = new TextBox();
-            Button speedEdit = new Button();
-            Label length = new Label();
-            ListBox colorList = new ListBox();
-            Button colorEdit = new Button();
-            Button delete = new Button();
-
-            gb.Controls.Add(speed);
-            gb.Controls.Add(speedInput);
-            gb.Controls.Add(speedEdit);
-            gb.Controls.Add(length);
-            gb.Controls.Add(colorList);
-            gb.Controls.Add(colorEdit);
-            gb.Controls.Add(delete);
-
-            speed.Location = new System.Drawing.Point(35, 30);
-            speed.Size = new System.Drawing.Size(80, 20);
-            speed.Text = "Speed: ";
-            speed.Name = "Speed";
-
-            speedInput.Location = new System.Drawing.Point(120, 30);
-            speedInput.Size = new System.Drawing.Size(50, 20);
-            speedInput.Name = "SpeedInput";
-
-            speedEdit.Location = new System.Drawing.Point(185, 30);
-            speedEdit.Text = "edit";
-            speedEdit.Name = "SpeedEdit_" + _usedId.ToString();
-            speedEdit.Size = new System.Drawing.Size(40, 20);
-            speedEdit.Click += new System.EventHandler(this.buttonSpeedEdit_Click);
-
-            length.Location = new System.Drawing.Point(35, 60);
-            length.Text = "Length: 0";
-            length.Name = "Length";
-
-            colorList.Location = new System.Drawing.Point(250, 10);
-            colorList.Size = new System.Drawing.Size(150, 100);
-            colorList.Name = "ColorList";
-
-            colorEdit.Location = new System.Drawing.Point(420, 50);
-            colorEdit.Text = "edit";
-            colorEdit.Name = "ColorEdit_" + _usedId.ToString();
-            colorEdit.Size = new System.Drawing.Size(40, 20);
-            colorEdit.Click += new System.EventHandler(this.buttonColorEdit_Click);
-
-            delete.Text = "delete";
-            delete.Name = "Delete_" + _usedId.ToString();
-            delete.Location = new Point(420, 20);
-            delete.Click += new System.EventHandler(this.buttonDelete_Click);
-
-
-            gb.Size = _gbSize;
-            gb.Text = "Arduino_" + _usedId.ToString();
-            gb.BackColor = System.Drawing.SystemColors.ActiveBorder;
-
-            groupBoxes.Add(gb);
-            arduinos.Add(new Arduino(_usedId));
-            _usedId++;
-        }
-
-
-        private void buttonSpeedEdit_Click(object sender, EventArgs e)
-        {
-            //extracting textBox value and converting to double, updating groupBox controls
-            int id = getId(sender);
-            Control textBox = FindControl(groupBoxes[id], "SpeedInput");
-            Control label = FindControl(groupBoxes[id], "Speed");
-            int speed;
-            if (!int.TryParse(textBox.Text, out speed))
-                textBox.Text = "";
-            else
-            {
-                double dSpeed =  speed/Math.Pow(10, textBox.Text.Length);
-                Console.WriteLine(dSpeed);
-                if (dSpeed > 1 || dSpeed < 0)
-                    textBox.Text = "";
-                else
-                {
-                    label.Text = "Speed: " + dSpeed.ToString();
-                    arduinos[id]._speed = dSpeed;
-                }
-            }
-        }
-        private void buttonColorEdit_Click(object sender, EventArgs e)
-        {
-            int id = getId(sender);
-            arduinoPanel.Visible = false;
-            colorsPanel.Visible = true;
-        }
-
-        private void buttonDelete_Click(object sender, EventArgs e)
-        {
-            int id = getId(sender);
-            int gb_sequence = 0;
-            int ar_sequence = 0;
-            for (int i = 0; i < groupBoxes.Count; i++)
-            {
-                int gb_id = getId(groupBoxes[i]);
-                if (gb_id == id)
-                {
-                    gb_sequence = i;
-                    break;
-                }
-            }
-            arduinoPanel.Controls.Remove(groupBoxes[gb_sequence]);
-            groupBoxes.RemoveAt(gb_sequence);
-            for (int i = 0; i < arduinos.Count; i++)
-            {
-                if (arduinos[i]._id == id)
-                {
-                    ar_sequence = i;
-                    break;
-                }
-            }
-            arduinos.RemoveAt(ar_sequence);
-            arduinoChangeLocations();
-        }
-
-        private void arduinoChangeLocations()
-        {
-            arduinoPanel.AutoScroll = false;
-            for (int i = 0; i < groupBoxes.Count; i++)
-            {
-                groupBoxes[i].Location = new Point(30, 20 + i * (_gbSize.Height + 10));
-            }
-            Console.WriteLine("GbCount: "+groupBoxes.Count);
-
-            buttonAdd.Location = new Point(30, 20 + groupBoxes.Count * (_gbSize.Height + 10));
-            arduinoPanel.AutoScroll = true;
-        }
-        #endregion
 
         #region JsonConvertor
         private string ArdToJson(Arduino ard)
