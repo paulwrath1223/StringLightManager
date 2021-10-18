@@ -97,20 +97,23 @@ namespace GUI_csharp
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "Open";
+            this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenArduino);
             // 
             // saveAsTemplateToolStripMenuItem
             // 
             this.saveAsTemplateToolStripMenuItem.Name = "saveAsTemplateToolStripMenuItem";
-            this.saveAsTemplateToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.saveAsTemplateToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveAsTemplateToolStripMenuItem.Text = "Save as Template";
+            this.saveAsTemplateToolStripMenuItem.Click += new System.EventHandler(this.SaveArduino);
             // 
             // uploadToolStripMenuItem
             // 
             this.uploadToolStripMenuItem.Name = "uploadToolStripMenuItem";
             this.uploadToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
             this.uploadToolStripMenuItem.Text = "Upload";
+            this.uploadToolStripMenuItem.Click += new System.EventHandler(this.UploadArduino);
             // 
             // clearToolStripMenuItem
             // 

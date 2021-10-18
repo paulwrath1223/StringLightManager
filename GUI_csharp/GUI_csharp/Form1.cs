@@ -77,7 +77,8 @@ namespace GUI_csharp
             //testArduino._length = 20;
             //testArduino._speed = 0.7;
             //testArduino._colorList = culus;
-            //UploadArduino(testArduino);
+            //_arduino = testArduino;
+            //UploadArduino(new Button(), new EventArgs());
 
             #endregion
         }
@@ -199,7 +200,7 @@ namespace GUI_csharp
             gb.Location = new Point(30, 150);
 
             int[] rgb = {255, 255, 255};
-            _arduino._colorList.Add(new RGBColor(rgb, 0));
+            _arduino._colorList.Add(new RGBColor(rgb[0], rgb[1], rgb[2], 0));
             groupBoxes.Add(gb);
             _usedId++;
         }
@@ -261,7 +262,8 @@ namespace GUI_csharp
             groupBoxes[getParentGroupBoxIndex(id)].BackColor = color;
             groupBoxes[getParentGroupBoxIndex(id)].Text = RGBValue;
             //TODO: Save color value
-            _arduino._colorList[getParentGroupBoxIndex(id)]._rgb = RGBtoInt(RGBValue);
+            int[] rgbArray = RGBtoInt(RGBValue);
+            _arduino._colorList[getParentGroupBoxIndex(id)].SetRGB(rgbArray[0], rgbArray[1], rgbArray[2]);
         }
 
         private static String RGBConverter(System.Drawing.Color c)
@@ -352,11 +354,7 @@ namespace GUI_csharp
             Console.WriteLine("Colors:");
             foreach (var color in _arduino._colorList)
             {
-                for (int i = 0; i < color._rgb.Length; i++)
-                {
-                    Console.Write(color._rgb[i]+",");
-                }
-
+                Console.Write(color._r + ", " + color._g + ", " + color._b);
                 Console.WriteLine("Frames: "+color._transitionFrames);
             }
 
@@ -373,10 +371,10 @@ namespace GUI_csharp
             returnedLength = obj.numLights;
         }
 
-        private async void UploadArduino(Arduino ard)
+        private async void UploadArduino(object sender, EventArgs e)
         {
             List<RGBColorBasic> tempColors = new List<RGBColorBasic>();
-            tempColors = ColorCompiler(ard._colorList);
+            tempColors = ColorCompiler(_arduino._colorList);
             //JsonArduino temp = new JsonArduino(ard, tempColors);
             //string jsonOut = JsonConvert.SerializeObject(temp);
 
@@ -384,32 +382,30 @@ namespace GUI_csharp
             {
                 colorLength = tempColors.Count,
                 colors = tempColors,
-                speed = ard._speed,
-                numLights = ard._length,
-                update = 1
+                speed = _arduino._speed,
+                numLights = _arduino._length,
+                update = true
             };
 
-            FirebaseResponse response = await client.GetAsync("Arduino" + ard._id + "/");
+            FirebaseResponse response = await client.GetAsync("Arduino" + _arduino._id + "/");
             Data obj = response.ResultAs<Data>();
 
 
             if (obj != null)
             {
-                FirebaseResponse response1 = await client.UpdateAsync("Arduino" + ard._id + "/", data);
-                response1.ResultAs<Data>();
+                FirebaseResponse response2 = await client.DeleteAsync("Arduino" + _arduino._id + "/");
+                response2.ResultAs<Data>();
 
-                MessageBox.Show("Arduino " + ard._id + " updated.");
+                MessageBox.Show("Arduino " + _arduino._id + " updated.");
             }
-            else
-            {
 
-                //if id does not yet exist
-                SetResponse response1 = await client.SetAsync("Arduino" + ard._id + "/", data);
-                response1.ResultAs<Data>();
 
-                MessageBox.Show("Arduino " + ard._id + " created.");
+            //if id does not yet exist
+            SetResponse response1 = await client.SetAsync("Arduino" + _arduino._id + "/", data);
+            response1.ResultAs<Data>();
 
-            }
+            MessageBox.Show("Arduino " + _arduino._id + " created.");
+
         }
 
         private List<RGBColorBasic> ColorCompiler(List<RGBColor> colorsIn)
@@ -452,7 +448,7 @@ namespace GUI_csharp
         }
 
 
-        private void OpenArduino ()
+        private void OpenArduino(object sender, EventArgs e)
         {
             OpenFileDialog open = new OpenFileDialog();
             open.Title = "Select file";
@@ -468,7 +464,7 @@ namespace GUI_csharp
 
         }
 
-        private void SaveArduino ()
+        private void SaveArduino (object sender, EventArgs e)
         {
             SaveFileDialog save = new SaveFileDialog();
             save.Title = "Select save location";
@@ -481,6 +477,7 @@ namespace GUI_csharp
                 write.Dispose();
             }
         }
+
 
 
 
