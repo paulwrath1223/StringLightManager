@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 //using Newtonsoft.json;
 using System.Diagnostics;
+using Google.Api.Gax.ResourceNames;
 
 namespace GUI_csharp
 {
@@ -21,7 +22,7 @@ namespace GUI_csharp
 
         #region DesignConstants
 
-        private Size _gbSize = new Size(500, 125);
+        private Size _gbSize = new Size(400, 125);
         #endregion
 
         public Form1()
@@ -32,9 +33,7 @@ namespace GUI_csharp
         private void Form1_Load(object sender, EventArgs e)
         {
             Init();
-            colorsPanel.Visible = false;
-            Add_Arduino();
-            arduinoChangeLocations();
+            Add_ColorGroupBox();
             //Debug.WriteLine(ArdToJson(arduinos[0]));
             //Debug.Flush();
 
@@ -64,6 +63,25 @@ namespace GUI_csharp
         }
         #endregion
 
+        private void bttn_Speed_Click(object sender, EventArgs e)
+        {
+            int speed;
+            if (!int.TryParse(tb_Speed.Text, out speed))
+                tb_Speed.Text = "";
+            else
+            {
+                double dSpeed = speed / Math.Pow(10, tb_Speed.Text.Length);
+                Console.WriteLine(dSpeed);
+                if (dSpeed > 1 || dSpeed < 0)
+                    tb_Speed.Text = "";
+                else
+                {
+                    lbl_Speed.Text = "Speed: " + dSpeed.ToString();
+                    //TODO: save speed to arduino class
+                }
+            }
+        }
+
         public static Control FindControl(/*this*/ Control parent, string name)
         {
             if (parent == null || string.IsNullOrEmpty(name))
@@ -83,6 +101,145 @@ namespace GUI_csharp
             }
         }
 
+        #region ColorsPanel
+
+        private void Add_ColorGroupBox()
+        {
+            GroupBox gb = new GroupBox();
+            colorsPanel.Controls.Add(gb);
+
+            Button bttn_ChangeColor = new Button();
+            Button bttn_Delete = new Button();
+
+            gb.Controls.Add(bttn_ChangeColor);
+            gb.Controls.Add(bttn_Delete);
+
+            bttn_ChangeColor.Text = "Change Color";
+            bttn_ChangeColor.Name = "ChangeColor_"+_usedId.ToString();
+            bttn_ChangeColor.Location = new Point(20, 20);
+            bttn_ChangeColor.BackColor = Color.Gray;
+            bttn_ChangeColor.Click += new System.EventHandler(bttn_ChangeColor_Click);
+
+            bttn_Delete.Text = "-";
+            bttn_Delete.Name = "Delete_" + _usedId.ToString();
+            bttn_Delete.Size = new Size(20, 20);
+            bttn_Delete.Location = new Point(_gbSize.Width - bttn_Delete.Size.Width - 5, 20);
+            bttn_Delete.BackColor = Color.Gray;
+            bttn_Delete.Click += new System.EventHandler(bttn_Delete_Click);
+
+
+            gb.Size = _gbSize;
+            gb.Name = "Color_" + _usedId.ToString();
+            gb.Location = new Point(30, 150);
+
+            groupBoxes.Add(gb);
+            _usedId++;
+        }
+        private int getId(object sender)
+        {
+            //Getting id of the groupbox
+            int id;
+            var b = (Button)sender;
+            string[] id_string = b.Name.Split('_');
+
+            if (!int.TryParse(id_string[1], out id))
+            {
+                Console.WriteLine("Button id could not be read!");
+                return 0;
+            }
+            else
+            {
+                return id;
+            }
+        }
+
+        private int getId(GroupBox gb)
+        {
+            int id;
+            string[] id_string = gb.Name.Split('_');
+
+            if (!int.TryParse(id_string[1], out id))
+            {
+                Console.WriteLine("GroupBox id could not be read!");
+                return 0;
+            }
+            else
+            {
+                return id;
+            }
+        }
+
+        private int getParentGroupBoxIndex(int id)
+        {
+            for (int i = 0; i < groupBoxes.Count; i++)
+            {
+                int gb_id = getId(groupBoxes[i]);
+                if (gb_id == id)
+                {
+                    return i;
+                }
+            }
+            Console.WriteLine("Parent could not be found!");
+            return 0;
+        }
+
+        private void bttn_ChangeColor_Click(object sender, EventArgs e)
+        {
+            int id = getId(sender);
+            ColorDialog cdlg = new ColorDialog();
+            cdlg.ShowDialog();
+            Color color = cdlg.Color;
+            string RGBValue = RGBConverter(color);
+            groupBoxes[getParentGroupBoxIndex(id)].BackColor = color;
+            groupBoxes[getParentGroupBoxIndex(id)].Text = RGBValue;
+            Console.WriteLine(RGBConverter(color));
+            //TODO: Save color value
+        }
+
+        private static String RGBConverter(System.Drawing.Color c)
+        {
+            return "RGB(" + c.R.ToString() + "," + c.G.ToString() + "," + c.B.ToString() + ")";
+        }
+
+        private void bttn_Delete_Click(object sender, EventArgs e)
+        {
+            int id = getId(sender);
+            int gb_index = getParentGroupBoxIndex(id);
+            colorsPanel.Controls.Remove(groupBoxes[gb_index]);
+            groupBoxes.RemoveAt(gb_index);
+
+            //TODO: remove from storage
+            //for (int i = 0; i < arduinos.Count; i++)
+            //{
+            //    if (arduinos[i]._id == id)
+            //    {
+            //        ar_sequence = i;
+            //        break;
+            //    }
+            //}
+            //arduinos.RemoveAt(ar_sequence);
+            groupBoxColorsChangeLocation();
+        }
+
+        private void bttn_Add_Click(object sender, EventArgs e)
+        {
+            Add_ColorGroupBox();
+            groupBoxColorsChangeLocation();
+        }
+
+        private void groupBoxColorsChangeLocation()
+        {
+            colorsPanel.AutoScroll = false;
+            for (int i = 0; i < groupBoxes.Count; i++)
+            {
+                groupBoxes[i].Location = new Point(30, 20 + i * (_gbSize.Height + 10));
+            }
+
+            bttn_Add.Location = new Point((_gbSize.Width+bttn_Add.Size.Width/2)/2, 20 + groupBoxes.Count * (_gbSize.Height + 10));
+            colorsPanel.AutoScroll = true;
+        }
+        #endregion
+        
         #region ArduinoPanel
         private void buttonAdd_Click(object sender, EventArgs e)
         {
@@ -154,39 +311,6 @@ namespace GUI_csharp
             _usedId++;
         }
 
-        private int getId(object sender)
-        {
-            //Getting id of the groupbox
-            int id;
-            var b = (Button)sender;
-            string[] id_string = b.Name.Split('_');
-
-            if (!int.TryParse(id_string[1], out id))
-            {
-                Console.WriteLine("Button id could not be read!");
-                return 0;
-            }
-            else
-            {
-                return id;
-            }
-        }
-
-        private int getId(GroupBox gb)
-        {
-            int id;
-            string[] id_string = gb.Text.Split('_');
-
-            if (!int.TryParse(id_string[1], out id))
-            {
-                Console.WriteLine("GroupBox id could not be read!");
-                return 0;
-            }
-            else
-            {
-                return id;
-            }
-        }
 
         private void buttonSpeedEdit_Click(object sender, EventArgs e)
         {
@@ -323,24 +447,5 @@ namespace GUI_csharp
             return output;
         }
         #endregion
-
-        private void bttn_Speed_Click(object sender, EventArgs e)
-        {
-            int speed;
-            if (!int.TryParse(tb_Speed.Text, out speed))
-                tb_Speed.Text = "";
-            else
-            {
-                double dSpeed = speed / Math.Pow(10, tb_Speed.Text.Length);
-                Console.WriteLine(dSpeed);
-                if (dSpeed > 1 || dSpeed < 0)
-                    tb_Speed.Text = "";
-                else
-                {
-                    lbl_Speed.Text = "Speed: " + dSpeed.ToString();
-                    //TODO: save speed to arduino class
-                }
-            }
-        }
     }
 }

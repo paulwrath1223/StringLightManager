@@ -41,14 +41,17 @@ namespace GUI_csharp
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.amongusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.cb_arduinoID = new System.Windows.Forms.ComboBox();
             this.saveAsTemplateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.uploadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cb_arduinoID = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.lbl_Speed = new System.Windows.Forms.Label();
             this.tb_Speed = new System.Windows.Forms.TextBox();
             this.bttn_Speed = new System.Windows.Forms.Button();
+            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
+            this.colorDialog2 = new System.Windows.Forms.ColorDialog();
+            this.bttn_Add = new System.Windows.Forms.Button();
             this.arduinoPanel.SuspendLayout();
             this.colorsPanel.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -78,11 +81,12 @@ namespace GUI_csharp
             // colorsPanel
             // 
             this.colorsPanel.AutoScroll = true;
+            this.colorsPanel.Controls.Add(this.bttn_Add);
             this.colorsPanel.Controls.Add(this.groupBox1);
-            this.colorsPanel.Location = new System.Drawing.Point(240, 128);
+            this.colorsPanel.Location = new System.Drawing.Point(182, 128);
             this.colorsPanel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.colorsPanel.Name = "colorsPanel";
-            this.colorsPanel.Size = new System.Drawing.Size(487, 380);
+            this.colorsPanel.Size = new System.Drawing.Size(679, 404);
             this.colorsPanel.TabIndex = 1;
             // 
             // groupBox1
@@ -159,7 +163,7 @@ namespace GUI_csharp
             this.clearToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1067, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1067, 30);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -175,21 +179,13 @@ namespace GUI_csharp
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(207, 26);
             this.openToolStripMenuItem.Text = "Open";
-            // 
-            // cb_arduinoID
-            // 
-            this.cb_arduinoID.FormattingEnabled = true;
-            this.cb_arduinoID.Location = new System.Drawing.Point(414, 40);
-            this.cb_arduinoID.Name = "cb_arduinoID";
-            this.cb_arduinoID.Size = new System.Drawing.Size(121, 24);
-            this.cb_arduinoID.TabIndex = 3;
             // 
             // saveAsTemplateToolStripMenuItem
             // 
             this.saveAsTemplateToolStripMenuItem.Name = "saveAsTemplateToolStripMenuItem";
-            this.saveAsTemplateToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.saveAsTemplateToolStripMenuItem.Size = new System.Drawing.Size(207, 26);
             this.saveAsTemplateToolStripMenuItem.Text = "Save as Template";
             // 
             // uploadToolStripMenuItem
@@ -203,6 +199,14 @@ namespace GUI_csharp
             this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
             this.clearToolStripMenuItem.Size = new System.Drawing.Size(57, 24);
             this.clearToolStripMenuItem.Text = "Clear";
+            // 
+            // cb_arduinoID
+            // 
+            this.cb_arduinoID.FormattingEnabled = true;
+            this.cb_arduinoID.Location = new System.Drawing.Point(414, 40);
+            this.cb_arduinoID.Name = "cb_arduinoID";
+            this.cb_arduinoID.Size = new System.Drawing.Size(121, 24);
+            this.cb_arduinoID.TabIndex = 3;
             // 
             // label2
             // 
@@ -238,6 +242,18 @@ namespace GUI_csharp
             this.bttn_Speed.Text = "ok";
             this.bttn_Speed.UseVisualStyleBackColor = true;
             this.bttn_Speed.Click += new System.EventHandler(this.bttn_Speed_Click);
+            // 
+            // bttn_Add
+            // 
+            this.bttn_Add.Font = new System.Drawing.Font("Microsoft Sans Serif", 25.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.bttn_Add.ForeColor = System.Drawing.Color.Green;
+            this.bttn_Add.Location = new System.Drawing.Point(266, 161);
+            this.bttn_Add.Name = "bttn_Add";
+            this.bttn_Add.Size = new System.Drawing.Size(70, 59);
+            this.bttn_Add.TabIndex = 2;
+            this.bttn_Add.Text = "+";
+            this.bttn_Add.UseVisualStyleBackColor = true;
+            this.bttn_Add.Click += new System.EventHandler(this.bttn_Add_Click);
             // 
             // Form1
             // 
@@ -290,6 +306,9 @@ namespace GUI_csharp
         private System.Windows.Forms.Label lbl_Speed;
         private System.Windows.Forms.TextBox tb_Speed;
         private System.Windows.Forms.Button bttn_Speed;
+        private System.Windows.Forms.ColorDialog colorDialog1;
+        private System.Windows.Forms.ColorDialog colorDialog2;
+        private System.Windows.Forms.Button bttn_Add;
     }
 }
 
