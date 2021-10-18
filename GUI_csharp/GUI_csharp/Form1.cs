@@ -393,7 +393,12 @@ namespace GUI_csharp
             {
                 Add_ColorGroupBox();
                 groupBoxes[i].Text = RGBtoString(_arduino._colorList[i]._rgb);
-                Control lbl_
+                Color color = new Color();
+                color = Color.FromArgb(_arduino._colorList[i]._rgb[0], _arduino._colorList[i]._rgb[1],
+                    _arduino._colorList[i]._rgb[2]);
+                groupBoxes[i].BackColor = color;
+                Control lbl_KeyFrames = FindControl(groupBoxes[i], "lbl_KeyFrames");
+                lbl_KeyFrames.Text = _arduino._colorList[i]._transitionFrames.ToString();
             }
 
         }
