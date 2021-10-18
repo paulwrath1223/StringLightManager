@@ -12,10 +12,9 @@ namespace GUI_csharp
         public int _r = 0;
         public int _g = 0;
         public int _b = 0;
-
         public int _transitionFrames;
 
-        RGBColor(int[] rgbIn, int transitionFrames)
+        public RGBColor(int[] rgbIn, int transitionFrames)
         {
             _r = rgbIn[0];
             _g = rgbIn[1];
