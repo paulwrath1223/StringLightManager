@@ -127,6 +127,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arduino.cs" />
+    <Compile Include="Data.cs" />
     <Compile Include="JsonArduino class.cs" />
     <Compile Include="RGBColorBasic class.cs" />
     <Compile Include="Form1.cs">

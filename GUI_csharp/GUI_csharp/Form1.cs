@@ -11,14 +11,22 @@ using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using Newtonsoft.Json;
 using System.Diagnostics;
-using Firebase.Database;
-using Firebase.Database.Query;
+using FireSharp.Config;
+using FireSharp.Interfaces;
+using FireSharp.Response;
 
 
 namespace GUI_csharp
 {
     public partial class Form1 : Form
     {
+        IFirebaseConfig config = new FirebaseConfig
+        {
+            AuthSecret = "xnsxVJEbZchsxN2XPCkxAPhlZXdvWBt318oq98jh",
+            BasePath = "https://light-data1-default-rtdb.firebaseio.com/"
+        };
+        IFirebaseClient client;
+
         private List<GroupBox> groupBoxes = new List<GroupBox>();
         private List<Arduino> arduinos = new List<Arduino>();
         public Form1()
@@ -28,6 +36,12 @@ namespace GUI_csharp
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            client = new FireSharp.FirebaseClient(config);
+            if(client == null)
+            {
+                MessageBox.Show("failed to connect to database");
+            }
+
             colorsPanel.Visible = false;
             Add_Arduino();
             Control l = FindControl(groupBoxes[0], "Speed"); ;
@@ -149,13 +163,43 @@ namespace GUI_csharp
             }
         }
 
-        private void UploadArduino(Arduino ard)
+        private async void UploadArduino(Arduino ard)
         {
             List<RGBColorBasic> tempColors = new List<RGBColorBasic>();
             tempColors = ColorCompiler(ard._colorList);
-            JsonArduino temp = new JsonArduino(ard, tempColors);
-            string jsonOut = JsonConvert.SerializeObject(temp);
-            
+            //JsonArduino temp = new JsonArduino(ard, tempColors);
+            //string jsonOut = JsonConvert.SerializeObject(temp);
+
+            var data = new Data
+            {
+                colorLength = tempColors.Count,
+                colors = tempColors,
+                speed = ard._speed,
+                numLights = ard._length,
+                update = true
+            };
+
+            FirebaseResponse response = await client.GetAsync("Arduino/" + ard._id);
+            Data obj = response.ResultAs<Data>();
+
+
+            if (obj != null)
+            {
+                FirebaseResponse response1 = await client.UpdateAsync("Arduino/" + ard._id, data);
+                response1.ResultAs<Data>();
+
+                MessageBox.Show("Arduino " + ard._id + " updated.");
+            }
+            else
+            {
+
+                //if id does not yet exist
+                SetResponse response1 = await client.SetAsync("Arduino/" + ard._id, data);
+                response1.ResultAs<Data>();
+
+                MessageBox.Show("Arduino " + ard._id + " created.");
+
+            }
         }
 
         private List<RGBColorBasic> ColorCompiler(List<RGBColor> colorsIn)
