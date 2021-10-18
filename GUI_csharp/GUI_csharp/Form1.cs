@@ -58,6 +58,7 @@ namespace GUI_csharp
             //Debug.Flush();
 
             Console.WriteLine(cb_arduinoID.SelectedIndex);
+            Console.WriteLine("dropDown: "+cb_arduinoID.ValueMember);
 
 
             #region testing
@@ -87,9 +88,12 @@ namespace GUI_csharp
         private void Init()
         {
             List<Item> items = new List<Item>();
-            items.Add(new Item() { Text = "choose ID", Value = "Not chosen" });
-            items.Add(new Item() { Text = "id 1", Value = "ValueText2" });
-            items.Add(new Item() { Text = "id 2", Value = "ValueText3" });
+            items.Add(new Item() { Text = "choose ID", Value = null });
+            items.Add(new Item() { Text = "1", Value = "1" });
+            items.Add(new Item() { Text = "2", Value = "2" });
+            items.Add(new Item() { Text = "3", Value = "3" });
+            items.Add(new Item() { Text = "4", Value = "4" });
+
 
             cb_arduinoID.DataSource = items;
             cb_arduinoID.DisplayMember = "Text";
@@ -121,7 +125,7 @@ namespace GUI_csharp
                 {
                     lbl_Speed.Text = "Speed: " + dSpeed.ToString();
                     _arduino._speed = dSpeed;
-                    //TODO: save speed to arduino class
+                    _arduino._id = getIdFromDropDown();
                 }
             }
         }
@@ -285,6 +289,26 @@ namespace GUI_csharp
             return rgb;
         }
 
+        private string RGBtoString(int[] rgb)
+        {
+            string strRGB = "RGB("+ rgb[0]+","+rgb[1]+","+rgb[2]+")";
+            //foreach (var value in rgb)
+            //{
+            //    strRGB += value.ToString() + ",";
+            //}
+
+            //string a = "";
+            //for (int i = 0; i < strRGB.Length; i++)
+            //{
+            //    if (i == strRGB.Length - 1)
+            //        a += ")";
+            //    else
+            //        a += strRGB[i];
+            //}
+            //return a;
+            return strRGB;
+        }
+
         private void bttn_Delete_Click(object sender, EventArgs e)
         {
             int id = getId(sender);
@@ -312,6 +336,21 @@ namespace GUI_csharp
             Add_ColorGroupBox();
             groupBoxColorsChangeLocation();
             printArduino();
+        }
+
+        private int getIdFromDropDown()
+        {
+            string str_id = cb_arduinoID.Text;
+            int id = 0;
+            if (!int.TryParse(str_id, out id))
+            {
+                MessageBox.Show("Please choose valid id!");
+                return 0;
+            }
+            else
+            {
+                return id;
+            }
         }
 
         private void bttn_KeyFrames_Click(object sender, EventArgs e)
@@ -346,6 +385,18 @@ namespace GUI_csharp
         }
         #endregion
 
+        private void updateColorsPanelFromData()
+        {
+            cb_arduinoID.Text = _arduino._id.ToString();
+            lbl_Speed.Text = "Speed: " + _arduino._speed;
+            for (int i = 0; i < _arduino._colorList.Count; i++)
+            {
+                Add_ColorGroupBox();
+                groupBoxes[i].Text = RGBtoString(_arduino._colorList[i]._rgb);
+                Control lbl_
+            }
+
+        }
         private void printArduino()
         {
             Console.WriteLine("Arduino" + _arduino._id);
