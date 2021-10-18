@@ -46,7 +46,7 @@ namespace GUI_csharp
         private void Form1_Load(object sender, EventArgs e)
         {
             client = new FireSharp.FirebaseClient(config);
-            if(client == null)
+            if (client == null)
             {
                 MessageBox.Show("failed to connect to database");
             }
@@ -58,6 +58,28 @@ namespace GUI_csharp
             //Debug.Flush();
 
             Console.WriteLine(cb_arduinoID.SelectedIndex);
+
+
+            #region testing
+
+            //List<RGBColor> culus = new List<RGBColor>();
+            //int[] coloos = { 100, 150, 50 };
+            //culus.Add(new RGBColor(coloos, 10));
+            //coloos[0] = 250;
+            //coloos[1] = 10;
+            //coloos[2] = 63;
+            //culus.Add(new RGBColor(coloos, 10));
+            //coloos[0] = 200;
+            //coloos[1] = 30;
+            //coloos[2] = 75;
+            //culus.Add(new RGBColor(coloos, 10));
+            //Arduino testArduino = new Arduino(0);
+            //testArduino._length = 20;
+            //testArduino._speed = 0.7;
+            //testArduino._colorList = culus;
+            //UploadArduino(testArduino);
+
+            #endregion
         }
 
         #region DropdownMenu
@@ -325,16 +347,16 @@ namespace GUI_csharp
                 colors = tempColors,
                 speed = ard._speed,
                 numLights = ard._length,
-                update = true
+                update = 1
             };
 
-            FirebaseResponse response = await client.GetAsync("Arduino/" + ard._id);
+            FirebaseResponse response = await client.GetAsync("Arduino" + ard._id + "/");
             Data obj = response.ResultAs<Data>();
 
 
             if (obj != null)
             {
-                FirebaseResponse response1 = await client.UpdateAsync("Arduino/" + ard._id, data);
+                FirebaseResponse response1 = await client.UpdateAsync("Arduino" + ard._id + "/", data);
                 response1.ResultAs<Data>();
 
                 MessageBox.Show("Arduino " + ard._id + " updated.");
@@ -343,7 +365,7 @@ namespace GUI_csharp
             {
 
                 //if id does not yet exist
-                SetResponse response1 = await client.SetAsync("Arduino/" + ard._id, data);
+                SetResponse response1 = await client.SetAsync("Arduino" + ard._id + "/", data);
                 response1.ResultAs<Data>();
 
                 MessageBox.Show("Arduino " + ard._id + " created.");
@@ -356,9 +378,9 @@ namespace GUI_csharp
             List<RGBColorBasic> colorsOut = new List<RGBColorBasic>();
             RGBColor CurrentColor;
             RGBColor NextColor;
-            int dr;
-            int dg;
-            int db;
+            float dr;
+            float dg;
+            float db;
             List<int> rs = new List<int>();
             List<int> gs = new List<int>();
             List<int> bs = new List<int>();
@@ -373,17 +395,14 @@ namespace GUI_csharp
                     NextColor = colorsIn[index + 1];
                 }
                 CurrentColor = colorsIn[index];
-                dr = (CurrentColor._r - NextColor._r)/ CurrentColor._transitionFrames;
-                dg = (CurrentColor._g - NextColor._g)/ CurrentColor._transitionFrames;
-                db = (CurrentColor._b - NextColor._b)/ CurrentColor._transitionFrames;
-                rs.Add(CurrentColor._r);
-                gs.Add(CurrentColor._g);
-                bs.Add(CurrentColor._b);
+                dr = (float)(NextColor._r - CurrentColor._r) / (float)(CurrentColor._transitionFrames - 1);
+                dg = (float)(NextColor._g - CurrentColor._g) / (float)(CurrentColor._transitionFrames - 1);
+                db = (float)(NextColor._b - CurrentColor._b) / (float)(CurrentColor._transitionFrames - 1);
                 for (int index2 = 0; index2 < CurrentColor._transitionFrames; index2++)
                 {
-                    rs.Add(CurrentColor._r + (index2 * dr));
-                    gs.Add(CurrentColor._g + (index2 * dg));
-                    bs.Add(CurrentColor._b + (index2 * db));
+                    rs.Add(CurrentColor._r + (int)((float)index2 * dr));
+                    gs.Add(CurrentColor._g + (int)((float)index2 * dg));
+                    bs.Add(CurrentColor._b + (int)((float)index2 * db));
                 }
             }
             for(int index3 = 0; index3 < rs.Count; index3++)
@@ -394,7 +413,7 @@ namespace GUI_csharp
         }
 
 
-        private Arduino OpenArduino ()
+        private void OpenArduino ()
         {
             OpenFileDialog open = new OpenFileDialog();
             open.Title = "Select file";
@@ -405,12 +424,12 @@ namespace GUI_csharp
                 string jsonForm = read.ReadToEnd();
                 read.Dispose();
                 Arduino arduin = JsonConvert.DeserializeObject<Arduino>(jsonForm);
-                return arduin;
+                _arduino = arduin;
             }
-            return null;
+
         }
 
-        private void saveArduino (Arduino input)
+        private void SaveArduino ()
         {
             SaveFileDialog save = new SaveFileDialog();
             save.Title = "Select save location";
@@ -418,12 +437,16 @@ namespace GUI_csharp
             if(save.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 StreamWriter write = new StreamWriter(File.Create(save.FileName));
-                string json = JsonConvert.SerializeObject(input);
+                string json = JsonConvert.SerializeObject(_arduino);
                 write.Write(json);
                 write.Dispose();
             }
         }
 
+
+
         #endregion
+
+
     }
 }

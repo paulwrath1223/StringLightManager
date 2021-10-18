@@ -33,6 +33,7 @@ namespace GUI_csharp
             this.bttn_Add = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.amongusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsTemplateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.uploadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -43,7 +44,6 @@ namespace GUI_csharp
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.colorDialog2 = new System.Windows.Forms.ColorDialog();
             this.cb_arduinoID = new System.Windows.Forms.ComboBox();
-            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.colorsPanel.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -53,7 +53,7 @@ namespace GUI_csharp
             this.colorsPanel.AutoScroll = true;
             this.colorsPanel.Controls.Add(this.bttn_Add);
             this.colorsPanel.Location = new System.Drawing.Point(136, 104);
-            this.colorsPanel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.colorsPanel.Margin = new System.Windows.Forms.Padding(2);
             this.colorsPanel.Name = "colorsPanel";
             this.colorsPanel.Size = new System.Drawing.Size(509, 328);
             this.colorsPanel.TabIndex = 1;
@@ -63,7 +63,7 @@ namespace GUI_csharp
             this.bttn_Add.Font = new System.Drawing.Font("Microsoft Sans Serif", 25.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.bttn_Add.ForeColor = System.Drawing.Color.Green;
             this.bttn_Add.Location = new System.Drawing.Point(200, 131);
-            this.bttn_Add.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.bttn_Add.Margin = new System.Windows.Forms.Padding(2);
             this.bttn_Add.Name = "bttn_Add";
             this.bttn_Add.Size = new System.Drawing.Size(52, 48);
             this.bttn_Add.TabIndex = 2;
@@ -94,10 +94,16 @@ namespace GUI_csharp
             this.amongusToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.amongusToolStripMenuItem.Text = "File";
             // 
+            // openToolStripMenuItem
+            // 
+            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.openToolStripMenuItem.Text = "Open";
+            // 
             // saveAsTemplateToolStripMenuItem
             // 
             this.saveAsTemplateToolStripMenuItem.Name = "saveAsTemplateToolStripMenuItem";
-            this.saveAsTemplateToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAsTemplateToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.saveAsTemplateToolStripMenuItem.Text = "Save as Template";
             // 
             // uploadToolStripMenuItem
@@ -135,7 +141,7 @@ namespace GUI_csharp
             // tb_Speed
             // 
             this.tb_Speed.Location = new System.Drawing.Point(336, 69);
-            this.tb_Speed.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tb_Speed.Margin = new System.Windows.Forms.Padding(2);
             this.tb_Speed.Name = "tb_Speed";
             this.tb_Speed.Size = new System.Drawing.Size(61, 20);
             this.tb_Speed.TabIndex = 5;
@@ -143,7 +149,7 @@ namespace GUI_csharp
             // bttn_Speed
             // 
             this.bttn_Speed.Location = new System.Drawing.Point(400, 67);
-            this.bttn_Speed.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.bttn_Speed.Margin = new System.Windows.Forms.Padding(2);
             this.bttn_Speed.Name = "bttn_Speed";
             this.bttn_Speed.Size = new System.Drawing.Size(47, 27);
             this.bttn_Speed.TabIndex = 6;
@@ -159,12 +165,6 @@ namespace GUI_csharp
             this.cb_arduinoID.Name = "cb_arduinoID";
             this.cb_arduinoID.Size = new System.Drawing.Size(92, 21);
             this.cb_arduinoID.TabIndex = 3;
-            // 
-            // openToolStripMenuItem
-            // 
-            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.openToolStripMenuItem.Text = "Open";
             // 
             // Form1
             // 

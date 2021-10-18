@@ -8,6 +8,6 @@ namespace GUI_csharp
         public List<RGBColorBasic> colors { get; set; }
         public double speed { get; set; }
         public int numLights { get; set; }
-        public bool update { get; set; }
+        public int update { get; set; }
     }
 }
