@@ -163,6 +163,13 @@ namespace GUI_csharp
             }
         }
 
+        private async void GetLength(int id)
+        {
+            FirebaseResponse response = await client.GetAsync("Arduino/" + id);
+            Data obj = response.ResultAs<Data>();
+            return obj.numLights;
+        }
+
         private async void UploadArduino(Arduino ard)
         {
             List<RGBColorBasic> tempColors = new List<RGBColorBasic>();
