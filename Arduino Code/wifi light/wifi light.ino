@@ -167,7 +167,7 @@ void updateCloud()
           b = Firebase.getInt(fbdo, path+"b/");
           colorList[counter] = pixels.Color(r, g, b);
         }
-        Firebase.setInt(fbdo, updatePath, 0);
+        Firebase.setBool(fbdo, updatePath, false);
     }
 }
 
