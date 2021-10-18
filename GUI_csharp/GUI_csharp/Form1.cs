@@ -57,15 +57,19 @@ namespace GUI_csharp
             //Debug.Flush();
 
             Console.WriteLine(cb_arduinoID.SelectedIndex);
+            Console.WriteLine("dropDown: "+cb_arduinoID.ValueMember);
         }
 
         #region DropdownMenu
         private void Init()
         {
             List<Item> items = new List<Item>();
-            items.Add(new Item() { Text = "choose ID", Value = "Not chosen" });
-            items.Add(new Item() { Text = "id 1", Value = "ValueText2" });
-            items.Add(new Item() { Text = "id 2", Value = "ValueText3" });
+            items.Add(new Item() { Text = "choose ID", Value = null });
+            items.Add(new Item() { Text = "1", Value = "1" });
+            items.Add(new Item() { Text = "2", Value = "2" });
+            items.Add(new Item() { Text = "3", Value = "3" });
+            items.Add(new Item() { Text = "4", Value = "4" });
+
 
             cb_arduinoID.DataSource = items;
             cb_arduinoID.DisplayMember = "Text";
@@ -97,7 +101,7 @@ namespace GUI_csharp
                 {
                     lbl_Speed.Text = "Speed: " + dSpeed.ToString();
                     _arduino._speed = dSpeed;
-                    //TODO: save speed to arduino class
+                    _arduino._id = getIdFromDropDown();
                 }
             }
         }
@@ -287,6 +291,21 @@ namespace GUI_csharp
             Add_ColorGroupBox();
             groupBoxColorsChangeLocation();
             printArduino();
+        }
+
+        private int getIdFromDropDown()
+        {
+            string str_id = cb_arduinoID.Text;
+            int id = 0;
+            if (!int.TryParse(str_id, out id))
+            {
+                MessageBox.Show("Please choose valid id!");
+                return 0;
+            }
+            else
+            {
+                return id;
+            }
         }
 
         private void bttn_KeyFrames_Click(object sender, EventArgs e)
