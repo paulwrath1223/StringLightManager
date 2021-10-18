@@ -30,7 +30,7 @@ namespace GUI_csharp
         IFirebaseClient client;
 
         private List<GroupBox> groupBoxes = new List<GroupBox>();
-        private List<Arduino> arduinos = new List<Arduino>();
+        private Arduino _arduino = new Arduino(0);
         private int _usedId = 0;
 
         #region DesignConstants
@@ -46,7 +46,7 @@ namespace GUI_csharp
         private void Form1_Load(object sender, EventArgs e)
         {
             client = new FireSharp.FirebaseClient(config);
-            if (client == null)
+            if(client == null)
             {
                 MessageBox.Show("failed to connect to database");
             }
@@ -119,6 +119,7 @@ namespace GUI_csharp
                 else
                 {
                     lbl_Speed.Text = "Speed: " + dSpeed.ToString();
+                    _arduino._speed = dSpeed;
                     //TODO: save speed to arduino class
                 }
             }
@@ -197,6 +198,8 @@ namespace GUI_csharp
             gb.Name = "Color_" + _usedId.ToString();
             gb.Location = new Point(30, 150);
 
+            int[] rgb = {255, 255, 255};
+            _arduino._colorList.Add(new RGBColor(rgb, 0));
             groupBoxes.Add(gb);
             _usedId++;
         }
@@ -257,13 +260,27 @@ namespace GUI_csharp
             string RGBValue = RGBConverter(color);
             groupBoxes[getParentGroupBoxIndex(id)].BackColor = color;
             groupBoxes[getParentGroupBoxIndex(id)].Text = RGBValue;
-            Console.WriteLine(RGBConverter(color));
             //TODO: Save color value
+            _arduino._colorList[getParentGroupBoxIndex(id)]._rgb = RGBtoInt(RGBValue);
         }
 
         private static String RGBConverter(System.Drawing.Color c)
         {
             return "RGB(" + c.R.ToString() + "," + c.G.ToString() + "," + c.B.ToString() + ")";
+        }
+
+        private int[] RGBtoInt(string color)
+        {
+            int[] rgb = new int[3];
+            string a = color.Split('(')[1];
+            string b = a.Split(')')[0];
+            string[] c = b.Split(',');
+            for (int i = 0; i < c.Length; i++)
+            {
+                int.TryParse(c[i], out rgb[i]);
+            }
+
+            return rgb;
         }
 
         private void bttn_Delete_Click(object sender, EventArgs e)
@@ -272,8 +289,10 @@ namespace GUI_csharp
             int gb_index = getParentGroupBoxIndex(id);
             colorsPanel.Controls.Remove(groupBoxes[gb_index]);
             groupBoxes.RemoveAt(gb_index);
-
             //TODO: remove from storage
+            _arduino._colorList.RemoveAt(gb_index);
+
+            
             //for (int i = 0; i < arduinos.Count; i++)
             //{
             //    if (arduinos[i]._id == id)
@@ -290,6 +309,7 @@ namespace GUI_csharp
         {
             Add_ColorGroupBox();
             groupBoxColorsChangeLocation();
+            printArduino();
         }
 
         private void bttn_KeyFrames_Click(object sender, EventArgs e)
@@ -305,6 +325,7 @@ namespace GUI_csharp
                 lbl_KeyFrames.Text = keyFrames.ToString();
                 Console.WriteLine("KeyFrames: "+keyFrames);
                 //TODO: save to database
+                _arduino._colorList[gb_index]._transitionFrames = keyFrames;
             }
             tb_KeyFrames.Text = "";
 
@@ -322,7 +343,25 @@ namespace GUI_csharp
             colorsPanel.AutoScroll = true;
         }
         #endregion
-        
+
+        private void printArduino()
+        {
+            Console.WriteLine("Arduino" + _arduino._id);
+            Console.WriteLine("Speed: " + _arduino._speed);
+            Console.WriteLine("Length: " + _arduino._length);
+            Console.WriteLine("Colors:");
+            foreach (var color in _arduino._colorList)
+            {
+                for (int i = 0; i < color._rgb.Length; i++)
+                {
+                    Console.Write(color._rgb[i]+",");
+                }
+
+                Console.WriteLine("Frames: "+color._transitionFrames);
+            }
+
+            Console.WriteLine("--------------------------------------");
+        }
 
         #region JsonConvertor
 
