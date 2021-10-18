@@ -21,6 +21,7 @@ namespace GUI_csharp
 {
     public partial class Form1 : Form
     {
+        public int returnedLength = -1;
         IFirebaseConfig config = new FirebaseConfig
         {
             AuthSecret = "xnsxVJEbZchsxN2XPCkxAPhlZXdvWBt318oq98jh",
@@ -163,7 +164,7 @@ namespace GUI_csharp
             tb_KeyFrames.Location = new Point(_gbSize.Width/2 - tb_KeyFrames.Size.Width/2, 20);
             tb_KeyFrames.Name = "tb_KeyFrames";
 
-            bttn_KeyFrames.Text = "edit";
+            bttn_KeyFrames.Text = "ok";
             bttn_KeyFrames.Name = "KeyFrames_" + _usedId.ToString();
             bttn_KeyFrames.Size = new Size(50, 30);
             bttn_KeyFrames.Location = new Point(tb_KeyFrames.Location.X+tb_KeyFrames.Size.Width + 10, tb_KeyFrames.Location.Y);
@@ -305,9 +306,10 @@ namespace GUI_csharp
 
         private async void GetLength(int id)
         {
+            returnedLength = -1;
             FirebaseResponse response = await client.GetAsync("Arduino/" + id);
             Data obj = response.ResultAs<Data>();
-            return obj.numLights;
+            returnedLength = obj.numLights;
         }
 
         private async void UploadArduino(Arduino ard)
