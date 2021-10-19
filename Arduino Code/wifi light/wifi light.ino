@@ -35,6 +35,7 @@ String basePath = "/Arduino0";
 
 #define PIN 2
 
+//TODO: Make the color array a fixed length to avoid heap allocation issues after many rewrites.
 
 Adafruit_NeoPixel pixels(1, PIN, NEO_GRB + NEO_KHZ800);
 
