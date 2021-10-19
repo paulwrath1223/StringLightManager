@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Windows.Input;
 using FireSharp.Config;
 using FireSharp.Interfaces;
 using FireSharp.Response;
@@ -85,7 +86,7 @@ namespace GUI_csharp
             #endregion
         }
 
-        #region DropdownMenu
+        #region UpperControls
         private void Init()
         {
             List<Item> items = new List<Item>();
@@ -110,7 +111,22 @@ namespace GUI_csharp
             public string Value { set; get; }
             public string Text { set; get; }
         }
-        #endregion
+
+        private void tb_Speed_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                bttn_Speed_Click(new Button(), EventArgs.Empty);
+            }
+        }
+
+        private void lengthTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                button1_Click(new Button(), EventArgs.Empty);
+            }
+        }
 
         private void bttn_Speed_Click(object sender, EventArgs e)
         {
@@ -133,6 +149,44 @@ namespace GUI_csharp
             }
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            int.TryParse(lengthTextBox.Text, out _arduino._length);
+            lengthLabel.Text = "length: " + _arduino._length.ToString();
+        }
+
+        private async void updateLengthFromId()
+        {
+            //GetLength(getIdFromDropDown());
+            GetLength(_arduino._id);
+            int dotCount = 0;
+            string loadingText = "Loading";
+            while (returnedLength == -1)
+            {
+                dotCount++;
+                if (dotCount == 4)
+                {
+                    dotCount = 0;
+                    loadingText = "Loading";
+                }
+                loadingText += ".";
+                await Task.Delay(25);
+                lengthLabel.Text = loadingText;
+            }
+            _arduino._length = returnedLength;
+            lengthLabel.Text = "length: " + returnedLength.ToString();
+        }
+
+        private void cb_arduinoID_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Console.WriteLine("ID changed");
+            if (int.TryParse(cb_arduinoID.Text, out _arduino._id))
+            {
+                updateLengthFromId();
+            }
+        }
+        #endregion
+
         public static Control FindControl(/*this*/ Control parent, string name)
         {
             if (parent == null || string.IsNullOrEmpty(name))
@@ -151,7 +205,7 @@ namespace GUI_csharp
                 return null;
             }
         }
-
+        
 
         #region ColorsPanel
 
@@ -210,6 +264,7 @@ namespace GUI_csharp
 
             tb_KeyFrames.Location = new Point(_gbSize.Width/2 - tb_KeyFrames.Size.Width/2, 20);
             tb_KeyFrames.Name = "tb_KeyFrames";
+            tb_KeyFrames.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tb_KeyFrames_KeyDown);
 
             bttn_KeyFrames.Text = "ok";
             bttn_KeyFrames.Name = "KeyFrames_" + _usedId.ToString();
@@ -226,7 +281,8 @@ namespace GUI_csharp
             groupBoxes.Add(gb);
             _usedId++;
         }
-        private int getId(object sender)
+
+        private int getId(Button sender)
         {
             //Getting id of the groupbox
             int id;
@@ -236,6 +292,22 @@ namespace GUI_csharp
             if (!int.TryParse(id_string[1], out id))
             {
                 Console.WriteLine("Button id could not be read!");
+                return 0;
+            }
+            else
+            {
+                return id;
+            }
+        }
+
+        private int getId(TextBox sender)
+        {
+            int id;
+            string[] id_string = sender.Name.Split('_');
+
+            if (!int.TryParse(id_string[1], out id))
+            {
+                Console.WriteLine("TextBox id could not be read!");
                 return 0;
             }
             else
@@ -276,7 +348,7 @@ namespace GUI_csharp
 
         private void bttn_ChangeColor_Click(object sender, EventArgs e)
         {
-            int id = getId(sender);
+            int id = getId(((Button)sender));
             ColorDialog cdlg = new ColorDialog();
             cdlg.ShowDialog();
             Color color = cdlg.Color;
@@ -288,7 +360,7 @@ namespace GUI_csharp
             _arduino._colorList[getParentGroupBoxIndex(id)].SetRGB(rgbArray[0], rgbArray[1], rgbArray[2]);
         }
 
-        private static String RGBConverter(System.Drawing.Color c)
+        private string RGBConverter(System.Drawing.Color c)
         {
             return "RGB(" + c.R.ToString() + "," + c.G.ToString() + "," + c.B.ToString() + ")";
         }
@@ -310,26 +382,12 @@ namespace GUI_csharp
         private string RGBtoString(int[] rgb)
         {
             string strRGB = "RGB("+ rgb[0]+","+rgb[1]+","+rgb[2]+")";
-            //foreach (var value in rgb)
-            //{
-            //    strRGB += value.ToString() + ",";
-            //}
-
-            //string a = "";
-            //for (int i = 0; i < strRGB.Length; i++)
-            //{
-            //    if (i == strRGB.Length - 1)
-            //        a += ")";
-            //    else
-            //        a += strRGB[i];
-            //}
-            //return a;
             return strRGB;
         }
 
         private void bttn_Delete_Click(object sender, EventArgs e)
         {
-            int id = getId(sender);
+            int id = getId((Button)sender);
             int gb_index = getParentGroupBoxIndex(id);
             colorsPanel.Controls.Remove(groupBoxes[gb_index]);
             groupBoxes.RemoveAt(gb_index);
@@ -374,7 +432,7 @@ namespace GUI_csharp
 
         private void bttn_KeyFrames_Click(object sender, EventArgs e)
         {
-            int id = getId(sender);
+            int id = getId((Button)sender);
             int gb_index = getParentGroupBoxIndex(id);
             Console.WriteLine("GB_index: "+gb_index);
             int keyFrames;
@@ -391,6 +449,27 @@ namespace GUI_csharp
 
         }
 
+        private void tb_KeyFrames_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                int id = getId((TextBox)sender);
+                int gb_index = getParentGroupBoxIndex(id);
+                Console.WriteLine("GB_index: " + gb_index);
+                int keyFrames;
+                Control tb_KeyFrames = FindControl(groupBoxes[gb_index], "tb_KeyFrames");
+                Control lbl_KeyFrames = FindControl(groupBoxes[gb_index], "lbl_KeyFrames");
+                if (int.TryParse(tb_KeyFrames.Text, out keyFrames))
+                {
+                    lbl_KeyFrames.Text = keyFrames.ToString();
+                    Console.WriteLine("KeyFrames: " + keyFrames);
+                    //TODO: save to database
+                    _arduino._colorList[gb_index]._transitionFrames = keyFrames;
+                }
+                tb_KeyFrames.Text = "";
+            }
+        }
+
         private void groupBoxColorsChangeLocation()
         {
             colorsPanel.AutoScroll = false;
@@ -403,17 +482,14 @@ namespace GUI_csharp
             bttn_Add.Location = new Point((_gbSize.Width+bttn_Add.Size.Width/2)/2, 20 + groupBoxes.Count * (_gbSize.Height + 10));
             colorsPanel.AutoScroll = true;
         }
-        #endregion
 
         private void updateColorsPanelFromData()
         {
             groupBoxes.Clear();
             colorsPanel.Controls.Clear();
             Add_AddButton();
-            printArduino();
             cb_arduinoID.Text = _arduino._id.ToString();
             lbl_Speed.Text = "Speed: " + _arduino._speed;
-            //TODO: it is infinite loop...
             for (int i = 0; i < _arduino._colorList.Count; i++)
             {
                 Add_ColorGroupBox();
@@ -428,20 +504,22 @@ namespace GUI_csharp
             groupBoxColorsChangeLocation();
 
         }
+        #endregion
 
-        private void printArduino()
+        private string printArduino()
         {
-            Console.WriteLine("Arduino" + _arduino._id);
-            Console.WriteLine("Speed: " + _arduino._speed);
-            Console.WriteLine("Length: " + _arduino._length);
-            Console.WriteLine("Colors:");
+            string output = "";
+            output += "Arduino" + _arduino._id + "\n";
+            output += "Speed: " + _arduino._speed + "\n";
+            output += "Length: " + _arduino._length + "\n";
+            output += "Colors:" + "\n";
             foreach (var color in _arduino._colorList)
             {
-                Console.Write(color._r + ", " + color._g + ", " + color._b);
-                Console.WriteLine("Frames: "+color._transitionFrames);
+                output += color._r + ", " + color._g + ", " + color._b;
+                output += "; Frames: "+color._transitionFrames + "\n";
             }
 
-            Console.WriteLine("--------------------------------------");
+            return output;
         }
 
         #region JsonConvertor
@@ -477,6 +555,15 @@ namespace GUI_csharp
             FirebaseResponse response = await client.GetAsync("Arduino" + _arduino._id + "/");
             Data obj = response.ResultAs<Data>();
 
+            //Making sure user wants to upload
+            string title = "Do you want to upload this Arduino?";
+            string message = printArduino();
+            MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+            DialogResult result = MessageBox.Show(message, title, buttons, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+            if (result == DialogResult.No)
+            {
+                return;
+            }
 
             if (obj != null)
             {
@@ -485,7 +572,6 @@ namespace GUI_csharp
 
                 MessageBox.Show("Arduino " + _arduino._id + " updated.");
             }
-
 
             //if id does not yet exist
             SetResponse response1 = await client.SetAsync("Arduino" + _arduino._id + "/", data);
@@ -570,43 +656,7 @@ namespace GUI_csharp
 
         #endregion
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            int.TryParse(lengthTextBox.Text, out _arduino._length);
-            lengthLabel.Text = "length: " + _arduino._length.ToString(); 
-        }
 
-        
-        private async void updateLengthFromId()
-        {
-            //GetLength(getIdFromDropDown());
-            GetLength(_arduino._id);
-            int dotCount = 0;
-            string loadingText = "Loading";
-            while (returnedLength == -1)
-            {
-                dotCount++;
-                if (dotCount == 4)
-                {
-                    dotCount = 0;
-                    loadingText = "Loading";
-                }
-                loadingText += ".";
-                await Task.Delay(25);
-                lengthLabel.Text = loadingText;
-            }
-            _arduino._length = returnedLength;
-            lengthLabel.Text = "length: " + returnedLength.ToString();
-        }
-
-        private void cb_arduinoID_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            Console.WriteLine("ID changed");
-            if (int.TryParse(cb_arduinoID.Text, out _arduino._id)) 
-            {
-                updateLengthFromId();
-            }
-        }
 
 
     }
