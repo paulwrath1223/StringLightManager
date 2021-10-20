@@ -6,8 +6,8 @@
 
 #include <addons/RTDBHelper.h>
 
-#define WIFI_SSID "WIFI910"
-#define WIFI_PASSWORD "1cadenas"
+#define WIFI_SSID "PHS"
+#define WIFI_PASSWORD "CONNECT2012"
 
 
 
@@ -60,7 +60,7 @@ uint32_t* colorList = 0;
 void updateCloud()
 {
     Serial.println("timing shit idek");
-    while(!(Firebase.ready() && (millis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0))
+    while(!(Firebase.ready() && (millis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0)))
     {
       delay(1);
       Serial.print(".");
@@ -68,13 +68,16 @@ void updateCloud()
     sendDataPrevMillis = millis();
     Serial.println("database query began");
     Firebase.getInt(fbdo, updatePath, update);
+
     if(update == 1)
     {
         Serial.println("update is true");
-        Firebase.getInt(fbdo, speedPath, speed);            
+        Firebase.getFloat(fbdo, speedPath, speed);            
+
         
         lastNumColors = numColors;
         Firebase.getInt(fbdo, colorLengthPath, numColors);
+
         if( ! (lastNumColors == numColors))
         {
             if (colorList != 0)
@@ -84,6 +87,7 @@ void updateCloud()
             colorList = new uint32_t [numPixels];
         }
         Firebase.getInt(fbdo, lightLengthPath, numPixels);
+
         pixels.updateLength(numPixels);
 
         for(int counter = 0; counter<numColors; counter++)
@@ -91,12 +95,16 @@ void updateCloud()
           path = colorPath + String(counter) + "/";
             
           Firebase.getInt(fbdo, path+"r/", r);
+
           Firebase.getInt(fbdo, path+"g/", g);
+
           Firebase.getInt(fbdo, path+"b/", b);
-            
+
+          
           colorList[counter] = pixels.Color(r, g, b);
         }
-        Firebase.setInt(fbdo, updatePath, false);
+        
+        Firebase.setInt(fbdo, updatePath, 0);
     }
     Serial.println("database query done :");
     Serial.print("speed: ");
