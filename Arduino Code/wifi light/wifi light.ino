@@ -22,9 +22,9 @@ FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
 
-unsigned long dataMillis = 0;
 
 
+unsigned long sendDataPrevMillis = 0;
 
 String basePath = "/Arduino0";
 
@@ -60,22 +60,21 @@ uint32_t* colorList = 0;
 void updateCloud()
 {
     Serial.println("timing shit idek");
-    while(!(millis() - dataMillis > 5000))
+    while(!(Firebase.ready() && (millis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0))
     {
       delay(1);
       Serial.print(".");
     }
-    dataMillis = millis();
+    sendDataPrevMillis = millis();
     Serial.println("database query began");
-    update = Firebase.getInt(fbdo, updatePath);
+    Firebase.getInt(fbdo, updatePath, update);
     if(update == 1)
     {
         Serial.println("update is true");
-        speed = Firebase.getInt(fbdo, speedPath);            
-
-        Serial.printf("Set speed to 69 %s\n", Firebase.setInt(fbdo, speedPath, 69) ? "ok" : fbdo.errorReason().c_str());
+        Firebase.getInt(fbdo, speedPath, speed);            
+        
         lastNumColors = numColors;
-        numColors = Firebase.getInt(fbdo, colorLengthPath);
+        Firebase.getInt(fbdo, colorLengthPath, numColors);
         if( ! (lastNumColors == numColors))
         {
             if (colorList != 0)
@@ -84,15 +83,17 @@ void updateCloud()
             }
             colorList = new uint32_t [numPixels];
         }
-        numPixels = Firebase.getInt(fbdo, lightLengthPath);
+        Firebase.getInt(fbdo, lightLengthPath, numPixels);
         pixels.updateLength(numPixels);
 
         for(int counter = 0; counter<numColors; counter++)
         {
           path = colorPath + String(counter) + "/";
-          r = Firebase.getInt(fbdo, path+"r/");
-          g = Firebase.getInt(fbdo, path+"g/");
-          b = Firebase.getInt(fbdo, path+"b/");
+            
+          Firebase.getInt(fbdo, path+"r/", r);
+          Firebase.getInt(fbdo, path+"g/", g);
+          Firebase.getInt(fbdo, path+"b/", b);
+            
           colorList[counter] = pixels.Color(r, g, b);
         }
         Firebase.setInt(fbdo, updatePath, false);
