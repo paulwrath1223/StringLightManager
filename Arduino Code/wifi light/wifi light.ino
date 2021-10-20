@@ -12,7 +12,7 @@
 
 
 /* 3. Define the RTDB URL */
-#define DATABASE_URL "https://light-data1-default-rtdb.firebaseio.com/" //<databaseName>.firebaseio.com or <databaseName>.<region>.firebasedatabase.app
+#define DATABASE_URL "https://light-data1-default-rtdb.firebaseio.com/" 
 #define DATABASE_SECRET "xnsxVJEbZchsxN2XPCkxAPhlZXdvWBt318oq98jh"
 
 
@@ -71,8 +71,9 @@ void updateCloud()
     if(update == 1)
     {
         Serial.println("update is true");
-        //speed = Firebase.getInt(fbdo, speedPath);                // see line below
-        Serial.printf("Set int... %s\n", Firebase.getInt(fbdo, speedPath) ? "ok" : fbdo.errorReason().c_str());
+        speed = Firebase.getInt(fbdo, speedPath);            
+
+        Serial.printf("Set speed to 69 %s\n", Firebase.setInt(fbdo, speedPath, 69) ? "ok" : fbdo.errorReason().c_str());
         lastNumColors = numColors;
         numColors = Firebase.getInt(fbdo, colorLengthPath);
         if( ! (lastNumColors == numColors))
