@@ -749,7 +749,7 @@ namespace GUI_csharp
             int x = this.Width / 2;
             cb_arduinoID.Location = new Point(x, cb_arduinoID.Location.Y);
             this.colorsPanel.Location = new System.Drawing.Point(Width/8, 180);
-            this.colorsPanel.Size = new System.Drawing.Size(Width/4*3, 600);
+            this.colorsPanel.Size = new System.Drawing.Size(Width/4*3, Height - 220);
             //this.bttn_Add.Location = new System.Drawing.Point(266, 161);
             this.lbl_Speed.Location = new System.Drawing.Point(x-lbl_Speed.Width - 10, 94);
             this.tb_Speed.Location = new System.Drawing.Point(x, 92);
