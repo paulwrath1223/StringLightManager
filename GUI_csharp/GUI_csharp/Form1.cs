@@ -193,7 +193,7 @@ namespace GUI_csharp
         private void button1_Click(object sender, EventArgs e)
         {
             int.TryParse(lengthTextBox.Text, out _arduino._length);
-            lengthLabel.Text = "length: " + _arduino._length.ToString();
+            lengthLabel.Text = "Length: " + _arduino._length.ToString();
         }
 
         private async void updateLengthFromId()
@@ -738,15 +738,16 @@ namespace GUI_csharp
         {
             _maximize = true;
             int x = this.Width / 2;
+            int x2 = x - lbl_id.Width - 50;
             cb_arduinoID.Location = new Point(x, cb_arduinoID.Location.Y);
             this.colorsPanel.Location = new System.Drawing.Point(Width/8, 180);
             this.colorsPanel.Size = new System.Drawing.Size(Width/4*3, Height - 220);
             //this.bttn_Add.Location = new System.Drawing.Point(266, 161);
-            this.lbl_Speed.Location = new System.Drawing.Point(x-lbl_Speed.Width - 10, 94);
+            this.lbl_Speed.Location = new System.Drawing.Point(x2, 94);
             this.tb_Speed.Location = new System.Drawing.Point(x, 92);
-            this.lengthLabel.Location = new System.Drawing.Point(x-lengthLabel.Width -10, 135);
+            this.lengthLabel.Location = new System.Drawing.Point(x2, 135);
             this.lengthTextBox.Location = new System.Drawing.Point(x, 135);
-            this.lbl_id.Location = new System.Drawing.Point(x-lbl_id.Width-10, 36);
+            this.lbl_id.Location = new System.Drawing.Point(x2, 36);
 
             groupBoxColorsChangeLocation();
 
@@ -754,16 +755,17 @@ namespace GUI_csharp
 
         private void Minimize()
         {
+            int x = 242;
             _maximize = false;
             this.colorsPanel.Size = new System.Drawing.Size(Width - 200, 353);
             this.colorsPanel.Location = new System.Drawing.Point((Width-colorsPanel.Size.Width) / 2, 180);
             //this.bttn_Add.Location = new System.Drawing.Point(266, 161);
-            this.lbl_Speed.Location = new System.Drawing.Point(260, 94);
+            this.lbl_Speed.Location = new System.Drawing.Point(x, 94);
             this.tb_Speed.Location = new System.Drawing.Point(369, 92);
             this.cb_arduinoID.Location = new System.Drawing.Point(369, 44);
-            this.lengthLabel.Location = new System.Drawing.Point(270, 135);
+            this.lengthLabel.Location = new System.Drawing.Point(x, 135);
             this.lengthTextBox.Location = new System.Drawing.Point(369, 135);
-            this.lbl_id.Location = new System.Drawing.Point(242, 36);
+            this.lbl_id.Location = new System.Drawing.Point(x, 36);
 
             groupBoxColorsChangeLocation();
         }
