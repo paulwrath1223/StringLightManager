@@ -156,6 +156,7 @@ namespace GUI_csharp
             if (e.KeyCode == Keys.Enter)
             {
                 bttn_Speed_Click(new Button(), EventArgs.Empty);
+                e.SuppressKeyPress = true;
             }
         }
 
@@ -164,6 +165,7 @@ namespace GUI_csharp
             if (e.KeyCode == Keys.Enter)
             {
                 button1_Click(new Button(), EventArgs.Empty);
+                e.SuppressKeyPress = true;
             }
         }
 
@@ -513,7 +515,6 @@ namespace GUI_csharp
                 tb_KeyFrames.Text = "";
             }
         }
-
         private void groupBoxColorsChangeLocation()
         {
             if(_maximize)
