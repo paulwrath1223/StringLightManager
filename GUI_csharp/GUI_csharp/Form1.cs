@@ -226,7 +226,6 @@ namespace GUI_csharp
             }
         }
         #endregion
-
         public static Control FindControl(/*this*/ Control parent, string name)
         {
             if (parent == null || string.IsNullOrEmpty(name))
@@ -245,10 +244,7 @@ namespace GUI_csharp
                 return null;
             }
         }
-        
-
         #region ColorsPanel
-
         private void Add_AddButton()
         {
             Button bttn_Add = new Button();
@@ -581,7 +577,6 @@ namespace GUI_csharp
 
         }
         #endregion
-
         private string printArduino()
         {
             string output = "";
@@ -597,8 +592,6 @@ namespace GUI_csharp
 
             return output;
         }
-
-        #region JsonConvertor
 
         private async void GetLength(int id)
         {
@@ -695,7 +688,6 @@ namespace GUI_csharp
             }
             return colorsOut;
         }
-
 
         private void OpenArduino(object sender, EventArgs e)
         {
