@@ -15,7 +15,7 @@ using System.Windows.Input;
 using FireSharp.Config;
 using FireSharp.Interfaces;
 using FireSharp.Response;
-//using Google.Api.Gax.ResourceNames;
+using Google.Api.Gax.ResourceNames;
 
 
 namespace GUI_csharp
@@ -35,8 +35,9 @@ namespace GUI_csharp
         private int _usedId = 0;
 
         #region DesignConstants
-
         private Size _gbSize = new Size(400, 125);
+        Color backColor = Color.FromArgb(64, 64, 64);
+        Color foreColor = Color.FromArgb(224, 224, 224);
         #endregion
 
         public Form1()
@@ -46,6 +47,7 @@ namespace GUI_csharp
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            DarkMode();
             client = new FireSharp.FirebaseClient(config);
             if(client == null)
             {
@@ -84,6 +86,37 @@ namespace GUI_csharp
             //UploadArduino(new Button(), new EventArgs());
 
             #endregion
+        }
+
+        private void DarkMode()
+        {
+            //menu Strip
+            menuStrip1.BackColor = backColor;
+            amongusToolStripMenuItem.BackColor = backColor;
+            amongusToolStripMenuItem.ForeColor = foreColor; 
+            clearToolStripMenuItem.BackColor = backColor;
+            clearToolStripMenuItem.ForeColor = foreColor;
+            uploadToolStripMenuItem.BackColor = backColor;
+            uploadToolStripMenuItem.ForeColor = foreColor;
+            openToolStripMenuItem.BackColor = backColor;
+            openToolStripMenuItem.ForeColor = foreColor;
+            saveAsTemplateToolStripMenuItem.BackColor = backColor;
+            saveAsTemplateToolStripMenuItem.ForeColor = foreColor;
+
+            //dropDownMenu
+            cb_arduinoID.BackColor = backColor;
+            cb_arduinoID.ForeColor = foreColor;
+           // cb_arduinoID.Margin = {0, 0, 0, 0};
+
+            //labels
+            lbl_Speed.ForeColor = foreColor;
+            lengthLabel.ForeColor = foreColor;
+
+            //Toolboxes
+            tb_Speed.ForeColor = foreColor;
+            tb_Speed.BackColor = backColor;
+            lengthTextBox.ForeColor = foreColor;
+            lengthTextBox.BackColor = backColor;
         }
 
         #region UpperControls
@@ -174,7 +207,7 @@ namespace GUI_csharp
                 lengthLabel.Text = loadingText;
             }
             _arduino._length = returnedLength;
-            lengthLabel.Text = "length: " + returnedLength.ToString();
+            lengthLabel.Text = "Length: " + returnedLength.ToString();
         }
 
         private void cb_arduinoID_SelectedIndexChanged(object sender, EventArgs e)
@@ -182,6 +215,7 @@ namespace GUI_csharp
             Console.WriteLine("ID changed");
             if (int.TryParse(cb_arduinoID.Text, out _arduino._id))
             {
+                lbl_id.Text = "ID: " + _arduino._id;
                 updateLengthFromId();
             }
         }
@@ -215,6 +249,7 @@ namespace GUI_csharp
             colorsPanel.Controls.Add(bttn_Add);
             bttn_Add.Font = new System.Drawing.Font("Microsoft Sans Serif", 25.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             bttn_Add.ForeColor = System.Drawing.Color.Green;
+            bttn_Add.BackColor = backColor;
             bttn_Add.Location = new System.Drawing.Point(30, 30);
             bttn_Add.Margin = new System.Windows.Forms.Padding(5);
             bttn_Add.Name = "bttn_Add";
@@ -245,37 +280,44 @@ namespace GUI_csharp
             bttn_ChangeColor.Text = "Change Color";
             bttn_ChangeColor.Name = "ChangeColor_"+_usedId.ToString();
             bttn_ChangeColor.Location = new Point(20, 20);
-            bttn_ChangeColor.BackColor = Color.Gray;
+            bttn_ChangeColor.BackColor = backColor;
+            bttn_ChangeColor.ForeColor = foreColor;
             bttn_ChangeColor.Click += new System.EventHandler(bttn_ChangeColor_Click);
 
             bttn_Delete.Text = "-";
             bttn_Delete.Name = "Delete_" + _usedId.ToString();
             bttn_Delete.Size = new Size(20, 20);
             bttn_Delete.Location = new Point(_gbSize.Width - bttn_Delete.Size.Width - 5, 20);
-            bttn_Delete.BackColor = Color.Gray;
+            bttn_Delete.BackColor = backColor;
+            bttn_Delete.ForeColor = foreColor; 
             bttn_Delete.Click += new System.EventHandler(bttn_Delete_Click);
 
             lbl_KeyFrames.Text = "0";
             lbl_KeyFrames.Location = new Point(_gbSize.Width / 2, _gbSize.Height / 2);
             lbl_KeyFrames.Name = "lbl_KeyFrames";
-            lbl_KeyFrames.BackColor = Color.Gray;
+            lbl_KeyFrames.BackColor = backColor;
+            lbl_KeyFrames.ForeColor = foreColor;
             lbl_KeyFrames.Size = new Size(60, 40);
             lbl_KeyFrames.Font = new Font("Microsoft Sans Serif", 25.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
             tb_KeyFrames.Location = new Point(_gbSize.Width/2 - tb_KeyFrames.Size.Width/2, 20);
             tb_KeyFrames.Name = "tb_KeyFrames";
             tb_KeyFrames.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tb_KeyFrames_KeyDown);
+            tb_KeyFrames.BackColor = backColor;
+            tb_KeyFrames.ForeColor = foreColor;
 
             bttn_KeyFrames.Text = "ok";
             bttn_KeyFrames.Name = "KeyFrames_" + _usedId.ToString();
             bttn_KeyFrames.Size = new Size(50, 30);
             bttn_KeyFrames.Location = new Point(tb_KeyFrames.Location.X+tb_KeyFrames.Size.Width + 10, tb_KeyFrames.Location.Y);
-            bttn_KeyFrames.BackColor = Color.Gray;
+            bttn_KeyFrames.BackColor = backColor;
+            bttn_KeyFrames.ForeColor = foreColor;
             bttn_KeyFrames.Click += new System.EventHandler(bttn_KeyFrames_Click);
 
             gb.Size = _gbSize;
             gb.Name = "Color_" + _usedId.ToString();
             gb.Location = new Point(30, 150);
+            gb.BackColor = Color.Black;
 
             int[] rgb = {255, 255, 255};
             groupBoxes.Add(gb);
@@ -292,7 +334,7 @@ namespace GUI_csharp
             if (!int.TryParse(id_string[1], out id))
             {
                 Console.WriteLine("Button id could not be read!");
-                return 0;
+                return -1;
             }
             else
             {
@@ -308,7 +350,7 @@ namespace GUI_csharp
             if (!int.TryParse(id_string[1], out id))
             {
                 Console.WriteLine("TextBox id could not be read!");
-                return 0;
+                return -1;
             }
             else
             {
@@ -324,7 +366,7 @@ namespace GUI_csharp
             if (!int.TryParse(id_string[1], out id))
             {
                 Console.WriteLine("GroupBox id could not be read!");
-                return 0;
+                return -1;
             }
             else
             {
@@ -343,7 +385,7 @@ namespace GUI_csharp
                 }
             }
             Console.WriteLine("Parent could not be found!");
-            return 0;
+            return -1;
         }
 
         private void bttn_ChangeColor_Click(object sender, EventArgs e)
