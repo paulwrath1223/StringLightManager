@@ -36,13 +36,17 @@ namespace GUI_csharp
 
         #region DesignConstants
         private Size _gbSize = new Size(400, 125);
+        private Size _difference = new Size(1000, 300);
         Color backColor = Color.FromArgb(64, 64, 64);
         Color foreColor = Color.FromArgb(224, 224, 224);
+        private bool _maximize = false;
+
         #endregion
 
         public Form1()
         {
             InitializeComponent();
+            this.SizeChanged += new EventHandler(Form1_SizeEventHandler);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -57,7 +61,9 @@ namespace GUI_csharp
 
             Init();
             //Add_ColorGroupBox();
-            groupBoxColorsChangeLocation();
+
+            Add_AddButton();
+            Minimize();
             //Debug.WriteLine(ArdToJson(arduinos[0]));
             //Debug.Flush();
 
@@ -514,14 +520,42 @@ namespace GUI_csharp
 
         private void groupBoxColorsChangeLocation()
         {
+            if(_maximize)
+                changeLocationBig();
+            else
+                changeLocationSmall();
+            
+        }
+
+        private void changeLocationBig()
+        {
             colorsPanel.AutoScroll = false;
+            int x = 0;
             for (int i = 0; i < groupBoxes.Count; i++)
             {
-                groupBoxes[i].Location = new Point(30, 20 + i * (_gbSize.Height + 10));
+                int y = 20 + i / 2 * (_gbSize.Height + 10);
+                if (i % 2 == 0)
+                    x = (colorsPanel.Width - 2 * _gbSize.Width) / 3;
+                else
+                    x = (colorsPanel.Width - 2 * _gbSize.Width) / 3 * 2 + _gbSize.Width;
+                groupBoxes[i].Location = new Point(x, y);
+
             }
 
             Control bttn_Add = FindControl(colorsPanel, "bttn_Add");
-            bttn_Add.Location = new Point((_gbSize.Width+bttn_Add.Size.Width/2)/2, 20 + groupBoxes.Count * (_gbSize.Height + 10));
+            bttn_Add.Location = new Point((colorsPanel.Width - bttn_Add.Width) / 2, 20 + (groupBoxes.Count+1)/2 * (_gbSize.Height + 10));
+            colorsPanel.AutoScroll = true;
+        }
+        private void changeLocationSmall()
+        {
+            colorsPanel.AutoScroll = false;
+            for (int i = 0; i < groupBoxes.Count; i++)
+            {
+                groupBoxes[i].Location = new Point((colorsPanel.Width - _gbSize.Width) / 2, 20 + i * (_gbSize.Height + 10));
+            }
+
+            Control bttn_Add = FindControl(colorsPanel, "bttn_Add");
+            bttn_Add.Location = new Point((colorsPanel.Size.Width - bttn_Add.Size.Width) / 2, 20 + groupBoxes.Count * (_gbSize.Height + 10));
             colorsPanel.AutoScroll = true;
         }
 
@@ -696,10 +730,51 @@ namespace GUI_csharp
             }
         }
 
+
+
+
         #endregion
 
+        private void Form1_SizeEventHandler(object sender, EventArgs e)
+        {
+            if (Width > _difference.Width)
+                Maximize();
+            else
+                Minimize();
+        }
 
+        private void Maximize()
+        {
+            _maximize = true;
+            int x = this.Width / 2;
+            cb_arduinoID.Location = new Point(x, cb_arduinoID.Location.Y);
+            this.colorsPanel.Location = new System.Drawing.Point(Width/8, 180);
+            this.colorsPanel.Size = new System.Drawing.Size(Width/4*3, 600);
+            //this.bttn_Add.Location = new System.Drawing.Point(266, 161);
+            this.lbl_Speed.Location = new System.Drawing.Point(x-lbl_Speed.Width - 10, 94);
+            this.tb_Speed.Location = new System.Drawing.Point(x, 92);
+            this.lengthLabel.Location = new System.Drawing.Point(x-lengthLabel.Width -10, 135);
+            this.lengthTextBox.Location = new System.Drawing.Point(x, 135);
+            this.lbl_id.Location = new System.Drawing.Point(x-lbl_id.Width-10, 36);
 
+            groupBoxColorsChangeLocation();
 
+        }
+
+        private void Minimize()
+        {
+            _maximize = false;
+            this.colorsPanel.Size = new System.Drawing.Size(Width - 200, 353);
+            this.colorsPanel.Location = new System.Drawing.Point((Width-colorsPanel.Size.Width) / 2, 180);
+            //this.bttn_Add.Location = new System.Drawing.Point(266, 161);
+            this.lbl_Speed.Location = new System.Drawing.Point(260, 94);
+            this.tb_Speed.Location = new System.Drawing.Point(369, 92);
+            this.cb_arduinoID.Location = new System.Drawing.Point(369, 44);
+            this.lengthLabel.Location = new System.Drawing.Point(270, 135);
+            this.lengthTextBox.Location = new System.Drawing.Point(369, 135);
+            this.lbl_id.Location = new System.Drawing.Point(242, 36);
+
+            groupBoxColorsChangeLocation();
+        }
     }
 }

@@ -30,7 +30,6 @@ namespace GUI_csharp
         private void InitializeComponent()
         {
             this.colorsPanel = new System.Windows.Forms.Panel();
-            this.bttn_Add = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.amongusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -46,32 +45,17 @@ namespace GUI_csharp
             this.lengthLabel = new System.Windows.Forms.Label();
             this.lengthTextBox = new System.Windows.Forms.TextBox();
             this.lbl_id = new System.Windows.Forms.Label();
-            this.colorsPanel.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // colorsPanel
             // 
             this.colorsPanel.AutoScroll = true;
-            this.colorsPanel.Controls.Add(this.bttn_Add);
             this.colorsPanel.Location = new System.Drawing.Point(81, 180);
             this.colorsPanel.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.colorsPanel.Name = "colorsPanel";
             this.colorsPanel.Size = new System.Drawing.Size(678, 353);
             this.colorsPanel.TabIndex = 1;
-            // 
-            // bttn_Add
-            // 
-            this.bttn_Add.Font = new System.Drawing.Font("Microsoft Sans Serif", 25.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bttn_Add.ForeColor = System.Drawing.Color.Green;
-            this.bttn_Add.Location = new System.Drawing.Point(266, 161);
-            this.bttn_Add.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
-            this.bttn_Add.Name = "bttn_Add";
-            this.bttn_Add.Size = new System.Drawing.Size(70, 59);
-            this.bttn_Add.TabIndex = 2;
-            this.bttn_Add.Text = "+";
-            this.bttn_Add.UseVisualStyleBackColor = true;
-            this.bttn_Add.Click += new System.EventHandler(this.bttn_Add_Click);
             // 
             // menuStrip1
             // 
@@ -103,14 +87,14 @@ namespace GUI_csharp
             // 
             this.openToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(207, 26);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenArduino);
             // 
             // saveAsTemplateToolStripMenuItem
             // 
             this.saveAsTemplateToolStripMenuItem.Name = "saveAsTemplateToolStripMenuItem";
-            this.saveAsTemplateToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.saveAsTemplateToolStripMenuItem.Size = new System.Drawing.Size(207, 26);
             this.saveAsTemplateToolStripMenuItem.Text = "Save as Template";
             this.saveAsTemplateToolStripMenuItem.Click += new System.EventHandler(this.SaveArduino);
             // 
@@ -227,7 +211,6 @@ namespace GUI_csharp
             this.Name = "Form1";
             this.Text = "String Light Manager";
             this.Load += new System.EventHandler(this.Form1_Load);
-            this.colorsPanel.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -247,7 +230,6 @@ namespace GUI_csharp
         private System.Windows.Forms.TextBox tb_Speed;
         private System.Windows.Forms.ColorDialog colorDialog1;
         private System.Windows.Forms.ColorDialog colorDialog2;
-        private System.Windows.Forms.Button bttn_Add;
         private System.Windows.Forms.ComboBox cb_arduinoID;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.Label lengthLabel;
