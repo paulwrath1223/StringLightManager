@@ -303,7 +303,7 @@ namespace GUI_csharp
             lbl_KeyFrames.Font = new Font("Microsoft Sans Serif", 25.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
             tb_KeyFrames.Location = new Point(_gbSize.Width/2 - tb_KeyFrames.Size.Width/2, 20);
-            tb_KeyFrames.Name = "tb_KeyFrames";
+            tb_KeyFrames.Name = "tbKeyFrames_" + _usedId.ToString();
             tb_KeyFrames.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tb_KeyFrames_KeyDown);
             tb_KeyFrames.BackColor = backColor;
             tb_KeyFrames.ForeColor = foreColor;
@@ -480,7 +480,7 @@ namespace GUI_csharp
             int gb_index = getParentGroupBoxIndex(id);
             Console.WriteLine("GB_index: "+gb_index);
             int keyFrames;
-            Control tb_KeyFrames = FindControl(groupBoxes[gb_index], "tb_KeyFrames");
+            Control tb_KeyFrames = FindControl(groupBoxes[gb_index], "tbKeyFrames_"+id);
             Control lbl_KeyFrames = FindControl(groupBoxes[gb_index], "lbl_KeyFrames");
             if (int.TryParse(tb_KeyFrames.Text, out keyFrames))
             {
@@ -501,7 +501,7 @@ namespace GUI_csharp
                 int gb_index = getParentGroupBoxIndex(id);
                 Console.WriteLine("GB_index: " + gb_index);
                 int keyFrames;
-                Control tb_KeyFrames = FindControl(groupBoxes[gb_index], "tb_KeyFrames");
+                Control tb_KeyFrames = FindControl(groupBoxes[gb_index], "tbKeyFrames_"+id);
                 Control lbl_KeyFrames = FindControl(groupBoxes[gb_index], "lbl_KeyFrames");
                 if (int.TryParse(tb_KeyFrames.Text, out keyFrames))
                 {
@@ -576,7 +576,9 @@ namespace GUI_csharp
             groupBoxColorsChangeLocation();
 
         }
+
         #endregion
+
         private string printArduino()
         {
             string output = "";
@@ -722,10 +724,6 @@ namespace GUI_csharp
             }
         }
 
-
-
-
-        #endregion
 
         private void Form1_SizeEventHandler(object sender, EventArgs e)
         {
