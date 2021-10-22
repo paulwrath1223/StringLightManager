@@ -177,6 +177,8 @@ namespace GUI_csharp
                 }
                 tb_Speed.Text = "";
 
+                bttn_Speed_Click(new Button(), EventArgs.Empty);
+                e.SuppressKeyPress = true;  // https://www.youtube.com/watch?v=dQw4w9WgXcQ
             }
         }
 
