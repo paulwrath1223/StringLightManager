@@ -481,7 +481,7 @@ namespace GUI_csharp
             Add_ColorGroupBox();
             _arduino._colorList.Add(new RGBColor(255, 255, 255, 0));
             groupBoxColorsChangeLocation();
-            printArduino();
+            _arduino.printArduino();
         }
 
         //private int getIdFromDropDown()
@@ -605,22 +605,7 @@ namespace GUI_csharp
 
         #endregion
 
-        private string printArduino()
-        {
-            string output = "";
-            output += "Arduino" + _arduino._id + "\n";
-            output += "Speed: " + _arduino._speed + "\n";
-            output += "Length: " + _arduino._length + "\n";
-            output += "Colors:" + "\n";
-            foreach (var color in _arduino._colorList)
-            {
-                output += color._r + ", " + color._g + ", " + color._b;
-                output += "; Frames: "+color._transitionFrames + "\n";
-            }
-
-            return output;
-        }
-
+        
         #region JSONCompiler
 
         private async void GetLength(int id)
@@ -663,7 +648,7 @@ namespace GUI_csharp
 
             //Making sure user wants to upload
             string title = "Do you want to upload this Arduino?";
-            string message = printArduino();
+            string message = _arduino.printArduino();
             MessageBoxButtons buttons = MessageBoxButtons.YesNo;
             DialogResult result = MessageBox.Show(message, title, buttons, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
             if (result == DialogResult.No)

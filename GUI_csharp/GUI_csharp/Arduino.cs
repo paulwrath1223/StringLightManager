@@ -18,5 +18,24 @@ namespace GUI_csharp
         {
             _id = id;
         }
+
+        public string printArduino()
+        {
+            string output = "";
+            output += "Arduino" + _id + "\n";
+            output += "Speed: " + _speed + "\n";
+            output += "Length: " + _length + "\n";
+            output += "Colors:" + "\n";
+            foreach (var color in _colorList)
+            {
+                output += color._r + ", " + color._g + ", " + color._b;
+                output += "; Frames: " + color._transitionFrames + "\n";
+            }
+
+            return output;
+        }
+
+
+
     }
 }
