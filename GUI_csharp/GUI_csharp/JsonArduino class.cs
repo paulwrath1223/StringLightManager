@@ -13,6 +13,7 @@ namespace GUI_csharp
 		public int colorLength = 0;
 		public bool update = true;
 		public int numLights = 0;
+		public bool state = true;
 		public List<RGBColorBasic> colors = new List<RGBColorBasic>();
 
 		public JsonArduino(Arduino joe, List<RGBColorBasic> cs)

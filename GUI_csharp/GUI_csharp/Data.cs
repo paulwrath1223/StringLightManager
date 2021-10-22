@@ -9,5 +9,6 @@ namespace GUI_csharp
         public double speed { get; set; }
         public int numLights { get; set; }
         public bool update { get; set; }
+        public bool state { get; set; }
     }
 }
