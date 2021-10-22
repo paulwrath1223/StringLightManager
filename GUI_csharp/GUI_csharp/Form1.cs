@@ -44,6 +44,7 @@ namespace GUI_csharp
         Color backColor = Color.FromArgb(64, 64, 64);
         Color foreColor = Color.FromArgb(224, 224, 224);
         private bool _maximize = false;
+        bool settingCheckBoxes;
 
         #endregion
 
@@ -911,18 +912,22 @@ namespace GUI_csharp
 
         private async void SetArduinoState(int id, bool state)
         {
-            Console.WriteLine("SetArduino: " + id + " State: " + state);
-            string statePath = ("Arduino" + id + "/state/");
-            FirebaseResponse response = await client.GetAsync(statePath);
-            if (response.ResultAs<string>() != null)
+            if (!settingCheckBoxes)
             {
-                SetResponse response3 = await client.SetAsync(statePath, state);
-                Console.WriteLine("SetArduino: " + id + " State: " + state+ " result: " + response3.ResultAs<string>());
+                Console.WriteLine("SetArduino: " + id + " State: " + state);
+                string statePath = ("Arduino" + id + "/state/");
+                FirebaseResponse response = await client.GetAsync(statePath);
+                if (response.ResultAs<string>() != null)
+                {
+                    SetResponse response3 = await client.SetAsync(statePath, state);
+                    Console.WriteLine("SetArduino: " + id + " State: " + state + " result: " + response3.ResultAs<string>());
+                }
             }
         }
 
         private async void updateCheckBox()
         {
+            settingCheckBoxes = true;
 
             bool[] boolarray = new bool[numberOfCheckBoxes];
             for (int id = 0; id < numberOfCheckBoxes; id++)
@@ -955,6 +960,7 @@ namespace GUI_csharp
                     Console.WriteLine("CheckBox not found!");
 
             }
+            settingCheckBoxes = false;
 
         }
 
