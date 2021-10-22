@@ -13,6 +13,7 @@ namespace GUI_csharp
         public int _length;
         public List<RGBColor> _colorList = new List<RGBColor>();
 
+
         public Arduino(int id)
         {
             _id = id;

@@ -130,16 +130,19 @@
     <Compile Include="Data.cs" />
     <Compile Include="JsonArduino class.cs" />
     <Compile Include="RGBColorBasic class.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="G:\Form1.cs">
       <SubType>Form</SubType>
+      <Link>Form1.cs</Link>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
+    <Compile Include="G:\Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
+      <Link>Form1.Designer.cs</Link>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="RGBColor.cs" />
-    <EmbeddedResource Include="Form1.resx">
+    <EmbeddedResource Include="G:\Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+      <Link>Form1.resx</Link>
     </EmbeddedResource>
     <None Include="Arduino.datasource" />
     <None Include="packages.config" />

@@ -162,19 +162,17 @@ namespace GUI_csharp
             if (e.KeyCode == Keys.Enter)
             {
                 e.SuppressKeyPress = true;
-                int speed;
-                if (int.TryParse(tb_Speed.Text, out speed))
-                {
-                    double dSpeed = speed / Math.Pow(10, tb_Speed.Text.Length);
-                    Console.WriteLine(dSpeed);
-                    if (dSpeed > 1 || dSpeed < 0)
-                        tb_Speed.Text = "";
-                    else
-                    {
-                        lbl_Speed.Text = "Speed: " + dSpeed.ToString();
-                        _arduino._speed = dSpeed;
-                    }
-                }
+                float speed;
+                float.TryParse(tb_Speed.Text, out speed);
+                
+                
+
+
+
+                lbl_Speed.Text = "Speed: " + speed.ToString();
+                _arduino._speed = speed;
+              
+                
                 tb_Speed.Text = "";
 
                 e.SuppressKeyPress = true;  // https://www.youtube.com/watch?v=dQw4w9WgXcQ
@@ -212,8 +210,18 @@ namespace GUI_csharp
                 await Task.Delay(25);
                 lengthLabel.Text = loadingText;
             }
-            _arduino._length = returnedLength;
-            lengthLabel.Text = "Length: " + returnedLength.ToString();
+            if (returnedLength == -2)
+            {
+                lengthLabel.Text = "null";
+            }
+            else
+            {
+
+
+                _arduino._length = returnedLength;
+                lengthLabel.Text = "Length: " + returnedLength.ToString();
+
+            }
         }
 
         private void cb_arduinoID_SelectedIndexChanged(object sender, EventArgs e)
@@ -623,7 +631,11 @@ namespace GUI_csharp
             Console.WriteLine("response: " + response);
             Data obj = response.ResultAs<Data>();
             Console.WriteLine("obj: " + obj);
-            returnedLength = obj.numLights;
+            if(obj != null)
+            {
+                returnedLength = obj.numLights;
+            }
+            returnedLength = -2;
             //returnedLength = 50;
         }
 
@@ -839,6 +851,7 @@ namespace GUI_csharp
 
         private void checkBoxStateChanged(object sender, EventArgs e)
         {
+            Console.WriteLine("checkBoxStateChanged");
             CheckBox cb = (CheckBox) sender;
             int id = getId(cb);
             bool state = false;
@@ -903,11 +916,13 @@ namespace GUI_csharp
 
         private async void SetArduinoState(int id, bool state)
         {
+            Console.WriteLine("SetArduino: " + id + " State: " + state);
             string statePath = ("Arduino" + id + "/state/");
             FirebaseResponse response = await client.GetAsync(statePath);
             if (response.ResultAs<string>() != null)
             {
-                await client.SetAsync(statePath, state);
+                SetResponse response3 = await client.SetAsync(statePath, state);
+                Console.WriteLine("SetArduino: " + id + " State: " + state+ " result: " + response3.ResultAs<string>());
             }
         }
 
@@ -918,7 +933,15 @@ namespace GUI_csharp
             {
                 string statePath = ("Arduino" + id + "/state/");
                 FirebaseResponse response = await client.GetAsync(statePath);
-                boolarray[id] = (response.ResultAs<bool>());
+                if (response.ResultAs<string>() != null)
+                {
+                    boolarray[id] = (response.ResultAs<bool>());
+                }
+                else
+                {
+                    boolarray[id] = false;
+                }
+
             }
             checkBoxesChangeState(boolarray);
         }
