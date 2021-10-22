@@ -45,6 +45,7 @@ namespace GUI_csharp
             this.lengthLabel = new System.Windows.Forms.Label();
             this.lengthTextBox = new System.Windows.Forms.TextBox();
             this.lbl_id = new System.Windows.Forms.Label();
+            this.turnArduinosOnOffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -64,7 +65,8 @@ namespace GUI_csharp
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.amongusToolStripMenuItem,
             this.uploadToolStripMenuItem,
-            this.clearToolStripMenuItem});
+            this.clearToolStripMenuItem,
+            this.turnArduinosOnOffToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(6, 3, 0, 3);
@@ -191,6 +193,13 @@ namespace GUI_csharp
             this.lbl_id.TabIndex = 10;
             this.lbl_id.Text = "ID: null";
             // 
+            // turnArduinosOnOffToolStripMenuItem
+            // 
+            this.turnArduinosOnOffToolStripMenuItem.Name = "turnArduinosOnOffToolStripMenuItem";
+            this.turnArduinosOnOffToolStripMenuItem.Size = new System.Drawing.Size(165, 24);
+            this.turnArduinosOnOffToolStripMenuItem.Text = "Turn Arduinos On/Off";
+            this.turnArduinosOnOffToolStripMenuItem.Click += new System.EventHandler(this.turnArduinosOnOffToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -235,6 +244,7 @@ namespace GUI_csharp
         private System.Windows.Forms.Label lengthLabel;
         private System.Windows.Forms.TextBox lengthTextBox;
         private System.Windows.Forms.Label lbl_id;
+        private System.Windows.Forms.ToolStripMenuItem turnArduinosOnOffToolStripMenuItem;
     }
 }
 

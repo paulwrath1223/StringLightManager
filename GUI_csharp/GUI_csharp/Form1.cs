@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Runtime.Remoting.Channels;
 using System.Windows.Input;
 using FireSharp.Config;
 using FireSharp.Interfaces;
@@ -33,6 +34,9 @@ namespace GUI_csharp
         private List<GroupBox> groupBoxes = new List<GroupBox>();
         private Arduino _arduino = new Arduino(0);
         private int _usedId = 0;
+        Panel panelCheckBoxes = new Panel();
+        int numberOfCheckBoxes = 20;
+        private bool checkBoxesVisible = false;
 
         #region DesignConstants
         private Size _gbSize = new Size(400, 125);
@@ -61,7 +65,7 @@ namespace GUI_csharp
 
             Init();
             //Add_ColorGroupBox();
-
+            InitializeCheckBoxes();
             Add_AddButton();
             Minimize();
             //Debug.WriteLine(ArdToJson(arduinos[0]));
@@ -108,6 +112,8 @@ namespace GUI_csharp
             openToolStripMenuItem.ForeColor = foreColor;
             saveAsTemplateToolStripMenuItem.BackColor = backColor;
             saveAsTemplateToolStripMenuItem.ForeColor = foreColor;
+            turnArduinosOnOffToolStripMenuItem.BackColor = backColor;
+            turnArduinosOnOffToolStripMenuItem.ForeColor = foreColor;
 
             //dropDownMenu
             cb_arduinoID.BackColor = backColor;
@@ -155,8 +161,22 @@ namespace GUI_csharp
         {
             if (e.KeyCode == Keys.Enter)
             {
-                bttn_Speed_Click(new Button(), EventArgs.Empty);
                 e.SuppressKeyPress = true;
+                int speed;
+                if (int.TryParse(tb_Speed.Text, out speed))
+                {
+                    double dSpeed = speed / Math.Pow(10, tb_Speed.Text.Length);
+                    Console.WriteLine(dSpeed);
+                    if (dSpeed > 1 || dSpeed < 0)
+                        tb_Speed.Text = "";
+                    else
+                    {
+                        lbl_Speed.Text = "Speed: " + dSpeed.ToString();
+                        _arduino._speed = dSpeed;
+                    }
+                }
+                tb_Speed.Text = "";
+
             }
         }
 
@@ -164,36 +184,13 @@ namespace GUI_csharp
         {
             if (e.KeyCode == Keys.Enter)
             {
-                button1_Click(new Button(), EventArgs.Empty);
                 e.SuppressKeyPress = true;
-            }
-        }
-
-        private void bttn_Speed_Click(object sender, EventArgs e)
-        {
-            int speed;
-            if (!int.TryParse(tb_Speed.Text, out speed))
-                tb_Speed.Text = "";
-            else
-            {
-                double dSpeed = speed / Math.Pow(10, tb_Speed.Text.Length);
-                Console.WriteLine(dSpeed);
-                if (dSpeed > 1 || dSpeed < 0)
-                    tb_Speed.Text = "";
-                else
+                if (int.TryParse(lengthTextBox.Text, out _arduino._length))
                 {
-                    lbl_Speed.Text = "Speed: " + dSpeed.ToString();
-                    _arduino._speed = dSpeed;
-                    //_arduino._id = getIdFromDropDown();
-
+                    lengthLabel.Text = "Length: " + _arduino._length.ToString();
                 }
+                lengthTextBox.Text = "";
             }
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            int.TryParse(lengthTextBox.Text, out _arduino._length);
-            lengthLabel.Text = "Length: " + _arduino._length.ToString();
         }
 
         private async void updateLengthFromId()
@@ -246,6 +243,7 @@ namespace GUI_csharp
                 return null;
             }
         }
+
         #region ColorsPanel
         private void Add_AddButton()
         {
@@ -273,13 +271,13 @@ namespace GUI_csharp
             Button bttn_Delete = new Button();
             Label lbl_KeyFrames = new Label();
             TextBox tb_KeyFrames = new TextBox();
-            Button bttn_KeyFrames = new Button();
+            //Button bttn_KeyFrames = new Button();
 
             gb.Controls.Add(bttn_ChangeColor);
             gb.Controls.Add(bttn_Delete);
             gb.Controls.Add(lbl_KeyFrames);
             gb.Controls.Add(tb_KeyFrames);
-            gb.Controls.Add(bttn_KeyFrames);
+            //gb.Controls.Add(bttn_KeyFrames);
 
             bttn_ChangeColor.Text = "Change Color";
             bttn_ChangeColor.Name = "ChangeColor_"+_usedId.ToString();
@@ -297,11 +295,11 @@ namespace GUI_csharp
             bttn_Delete.Click += new System.EventHandler(bttn_Delete_Click);
 
             lbl_KeyFrames.Text = "0";
-            lbl_KeyFrames.Location = new Point(_gbSize.Width / 2, _gbSize.Height / 2);
+            lbl_KeyFrames.Size = new Size(60, 40);
+            lbl_KeyFrames.Location = new Point((_gbSize.Width - lbl_KeyFrames.Size.Width) / 2, _gbSize.Height / 2);
             lbl_KeyFrames.Name = "lbl_KeyFrames";
             lbl_KeyFrames.BackColor = backColor;
             lbl_KeyFrames.ForeColor = foreColor;
-            lbl_KeyFrames.Size = new Size(60, 40);
             lbl_KeyFrames.Font = new Font("Microsoft Sans Serif", 25.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
             tb_KeyFrames.Location = new Point(_gbSize.Width/2 - tb_KeyFrames.Size.Width/2, 20);
@@ -310,13 +308,13 @@ namespace GUI_csharp
             tb_KeyFrames.BackColor = backColor;
             tb_KeyFrames.ForeColor = foreColor;
 
-            bttn_KeyFrames.Text = "ok";
-            bttn_KeyFrames.Name = "KeyFrames_" + _usedId.ToString();
-            bttn_KeyFrames.Size = new Size(50, 30);
-            bttn_KeyFrames.Location = new Point(tb_KeyFrames.Location.X+tb_KeyFrames.Size.Width + 10, tb_KeyFrames.Location.Y);
-            bttn_KeyFrames.BackColor = backColor;
-            bttn_KeyFrames.ForeColor = foreColor;
-            bttn_KeyFrames.Click += new System.EventHandler(bttn_KeyFrames_Click);
+            //bttn_KeyFrames.Text = "ok";
+            //bttn_KeyFrames.Name = "KeyFrames_" + _usedId.ToString();
+            //bttn_KeyFrames.Size = new Size(50, 30);
+            //bttn_KeyFrames.Location = new Point(tb_KeyFrames.Location.X+tb_KeyFrames.Size.Width + 10, tb_KeyFrames.Location.Y);
+            //bttn_KeyFrames.BackColor = backColor;
+            //bttn_KeyFrames.ForeColor = foreColor;
+            //bttn_KeyFrames.Click += new System.EventHandler(bttn_KeyFrames_Click);
 
             gb.Size = _gbSize;
             gb.Name = "Color_" + _usedId.ToString();
@@ -347,6 +345,22 @@ namespace GUI_csharp
         }
 
         private int getId(TextBox sender)
+        {
+            int id;
+            string[] id_string = sender.Name.Split('_');
+
+            if (!int.TryParse(id_string[1], out id))
+            {
+                Console.WriteLine("TextBox id could not be read!");
+                return -1;
+            }
+            else
+            {
+                return id;
+            }
+        }
+
+        private int getId(CheckBox sender)
         {
             int id;
             string[] id_string = sender.Name.Split('_');
@@ -476,24 +490,24 @@ namespace GUI_csharp
             
         //}
 
-        private void bttn_KeyFrames_Click(object sender, EventArgs e)
-        {
-            int id = getId((Button)sender);
-            int gb_index = getParentGroupBoxIndex(id);
-            Console.WriteLine("GB_index: "+gb_index);
-            int keyFrames;
-            Control tb_KeyFrames = FindControl(groupBoxes[gb_index], "tbKeyFrames_"+id);
-            Control lbl_KeyFrames = FindControl(groupBoxes[gb_index], "lbl_KeyFrames");
-            if (int.TryParse(tb_KeyFrames.Text, out keyFrames))
-            {
-                lbl_KeyFrames.Text = keyFrames.ToString();
-                Console.WriteLine("KeyFrames: "+keyFrames);
-                //TODO: save to database
-                _arduino._colorList[gb_index]._transitionFrames = keyFrames;
-            }
-            tb_KeyFrames.Text = "";
+        //private void bttn_KeyFrames_Click(object sender, EventArgs e)
+        //{
+        //    int id = getId((Button)sender);
+        //    int gb_index = getParentGroupBoxIndex(id);
+        //    Console.WriteLine("GB_index: "+gb_index);
+        //    int keyFrames;
+        //    Control tb_KeyFrames = FindControl(groupBoxes[gb_index], "tbKeyFrames_"+id);
+        //    Control lbl_KeyFrames = FindControl(groupBoxes[gb_index], "lbl_KeyFrames");
+        //    if (int.TryParse(tb_KeyFrames.Text, out keyFrames))
+        //    {
+        //        lbl_KeyFrames.Text = keyFrames.ToString();
+        //        Console.WriteLine("KeyFrames: "+keyFrames);
+        //        //TODO: save to database
+        //        _arduino._colorList[gb_index]._transitionFrames = keyFrames;
+        //    }
+        //    tb_KeyFrames.Text = "";
 
-        }
+        //}
 
         private void tb_KeyFrames_KeyDown(object sender, KeyEventArgs e)
         {
@@ -515,6 +529,7 @@ namespace GUI_csharp
                 tb_KeyFrames.Text = "";
             }
         }
+
         private void groupBoxColorsChangeLocation()
         {
             if(_maximize)
@@ -543,6 +558,7 @@ namespace GUI_csharp
             bttn_Add.Location = new Point((colorsPanel.Width - bttn_Add.Width) / 2, 20 + (groupBoxes.Count+1)/2 * (_gbSize.Height + 10));
             colorsPanel.AutoScroll = true;
         }
+
         private void changeLocationSmall()
         {
             colorsPanel.AutoScroll = false;
@@ -595,6 +611,8 @@ namespace GUI_csharp
 
             return output;
         }
+
+        #region JSONCompiler
 
         private async void GetLength(int id)
         {
@@ -725,6 +743,9 @@ namespace GUI_csharp
             }
         }
 
+        #endregion
+
+        #region Resize
 
         private void Form1_SizeEventHandler(object sender, EventArgs e)
         {
@@ -734,6 +755,7 @@ namespace GUI_csharp
                 Minimize();
         }
 
+
         private void Maximize()
         {
             _maximize = true;
@@ -742,6 +764,8 @@ namespace GUI_csharp
             cb_arduinoID.Location = new Point(x, cb_arduinoID.Location.Y);
             this.colorsPanel.Location = new System.Drawing.Point(Width/8, 180);
             this.colorsPanel.Size = new System.Drawing.Size(Width/4*3, Height - 220);
+            this.panelCheckBoxes.Location = new System.Drawing.Point(Width / 8, 60);
+            this.panelCheckBoxes.Size = new System.Drawing.Size(Width / 4 * 3, Height - 220);
             //this.bttn_Add.Location = new System.Drawing.Point(266, 161);
             this.lbl_Speed.Location = new System.Drawing.Point(x2, 94);
             this.tb_Speed.Location = new System.Drawing.Point(x, 92);
@@ -750,6 +774,7 @@ namespace GUI_csharp
             this.lbl_id.Location = new System.Drawing.Point(x2, 36);
 
             groupBoxColorsChangeLocation();
+            checkBoxesChangeLocation();
 
         }
 
@@ -759,7 +784,8 @@ namespace GUI_csharp
             _maximize = false;
             this.colorsPanel.Size = new System.Drawing.Size(Width - 200, 353);
             this.colorsPanel.Location = new System.Drawing.Point((Width-colorsPanel.Size.Width) / 2, 180);
-            //this.bttn_Add.Location = new System.Drawing.Point(266, 161);
+            this.panelCheckBoxes.Size = new System.Drawing.Size(Width - 200, 353);
+            this.panelCheckBoxes.Location = new System.Drawing.Point((Width - colorsPanel.Size.Width) / 2, 60);            //this.bttn_Add.Location = new System.Drawing.Point(266, 161);
             this.lbl_Speed.Location = new System.Drawing.Point(x, 94);
             this.tb_Speed.Location = new System.Drawing.Point(369, 92);
             this.cb_arduinoID.Location = new System.Drawing.Point(369, 44);
@@ -768,6 +794,110 @@ namespace GUI_csharp
             this.lbl_id.Location = new System.Drawing.Point(x, 36);
 
             groupBoxColorsChangeLocation();
+            checkBoxesChangeLocation();
         }
+
+        #endregion
+
+        #region CheckBoxes
+
+        private void InitializeCheckBoxes()
+        {
+            Controls.Add(panelCheckBoxes);
+            panelCheckBoxes.Location = new Point(30, 30);
+            panelCheckBoxes.Size = new Size(100, 100);
+            panelCheckBoxes.Visible = false;
+
+
+            for (int i = 0; i < numberOfCheckBoxes; i++)
+            {
+                CheckBox cb = new CheckBox();
+                panelCheckBoxes.Controls.Add(cb);
+                cb.Text = "ID: " + i;
+                cb.Name = "checkBox_" + i;
+                cb.Location = new Point(10, i * (cb.Size.Height + 5));
+                cb.ForeColor = foreColor;
+                cb.CheckStateChanged += new System.EventHandler(checkBoxStateChanged);
+            }
+        }
+
+        private void checkBoxesChangeLocation()
+        {
+            for (int i = 0; i < numberOfCheckBoxes; i++)
+            {
+                Control cb = FindControl(panelCheckBoxes, "checkBox_" + i);
+                int x = 0;
+                int y = 20 + i / 2 * (cb.Size.Height + 10);
+                if (i % 2 == 0)
+                    x = (panelCheckBoxes.Width - 2 * cb.Size.Width) / 3;
+                else
+                    x = (panelCheckBoxes.Width - 2 * cb.Size.Width) / 3 * 2 + cb.Size.Width;
+                cb.Location = new Point(x, y);
+            }
+        }
+
+        private void checkBoxStateChanged(object sender, EventArgs e)
+        {
+            CheckBox cb = (CheckBox) sender;
+            int id = getId(cb);
+            bool state = false;
+            if (cb.CheckState == CheckState.Checked)
+                state = cb.Checked;
+            //TODO: change state(id, state)
+        }
+
+        private void checkBoxesChangeState(bool[] states)
+        {
+            for (int i = 0; i < numberOfCheckBoxes; i++)
+            {
+                checkBoxChangeState(i, states[i]);
+            }
+        }
+
+        private void checkBoxChangeState(int id, bool state)
+        {
+            Control control = FindControl(panelCheckBoxes, "checkBox_" + id);
+            if (control is CheckBox)
+            {
+                CheckBox cb = (CheckBox) control;
+                if (state)
+                    cb.CheckState = CheckState.Checked;
+                else
+                    cb.CheckState = CheckState.Unchecked;
+            }
+            else
+                Console.WriteLine("CheckBox not found!");
+            
+        }
+
+        private void turnArduinosOnOffToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!checkBoxesVisible)
+            {
+                panelCheckBoxes.Visible = true;
+                controlsHide(false);
+                checkBoxesVisible = true;
+            }
+            else
+            {
+                panelCheckBoxes.Visible = false;
+                controlsHide(true);
+                checkBoxesVisible = false;
+            }
+            
+        }
+
+        private void controlsHide(bool state)
+        {
+            colorsPanel.Visible = state;
+            lbl_Speed.Visible = state;
+            tb_Speed.Visible = state;
+            lengthLabel.Visible = state;
+            lengthTextBox.Visible = state;
+            lbl_id.Visible = state;
+            cb_arduinoID.Visible = state;
+        }
+
+        #endregion
     }
 }
