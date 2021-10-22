@@ -210,10 +210,17 @@ void loop()
   
   while(timing > 1)
   {
-    timing-=1;
-    waveOffset++;    
+    timing -= 1;
+    waveOffset += 1;    
   }
-  if( !(waveOffset < numColors))  // >=
+
+  while(timing < (-1))
+  {
+    timing += 1;
+    waveOffset -= 1;    
+  }
+
+  if( !(waveOffset < numColors && waveOffset > -numColors))  
   {
     waveOffset = 0;
   }
