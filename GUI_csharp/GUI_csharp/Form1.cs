@@ -162,8 +162,8 @@ namespace GUI_csharp
             if (e.KeyCode == Keys.Enter)
             {
                 e.SuppressKeyPress = true;
-                float speed;
-                float.TryParse(tb_Speed.Text, out speed);
+                double speed;
+                double.TryParse(tb_Speed.Text, out speed);
                 
                 
 
@@ -641,6 +641,8 @@ namespace GUI_csharp
 
         private async void UploadArduino(object sender, EventArgs e)
         {
+
+            bool exist = false;
             List<RGBColorBasic> tempColors = new List<RGBColorBasic>();
             tempColors = ColorCompiler(_arduino._colorList);
             //JsonArduino temp = new JsonArduino(ard, tempColors);
@@ -652,7 +654,8 @@ namespace GUI_csharp
                 colors = tempColors,
                 speed = _arduino._speed,
                 numLights = _arduino._length,
-                update = true
+                update = true,
+                state = true
             };
 
             FirebaseResponse response = await client.GetAsync("Arduino" + _arduino._id + "/");
@@ -668,20 +671,27 @@ namespace GUI_csharp
                 return;
             }
 
-            if (obj != null)
+
+            exist = (obj != null);
+
+            if (!exist)
             {
                 FirebaseResponse response2 = await client.DeleteAsync("Arduino" + _arduino._id + "/");
                 response2.ResultAs<Data>();
-
-                MessageBox.Show("Arduino " + _arduino._id + " updated.");
             }
+
 
             //if id does not yet exist
             SetResponse response1 = await client.SetAsync("Arduino" + _arduino._id + "/", data);
             response1.ResultAs<Data>();
-
-            MessageBox.Show("Arduino " + _arduino._id + " created.");
-
+            if (exist)
+            {
+                MessageBox.Show("Arduino " + _arduino._id + " updated.");
+            }
+            else
+            {
+                MessageBox.Show("Arduino " + _arduino._id + " created.");
+            }
         }
 
         private List<RGBColorBasic> ColorCompiler(List<RGBColor> colorsIn)
@@ -928,6 +938,7 @@ namespace GUI_csharp
 
         private async void updateCheckBox()
         {
+            // TODO ADD LOADING TEXT
             bool[] boolarray = new bool[numberOfCheckBoxes];
             for (int id = 0; id < numberOfCheckBoxes; id++)
             {
