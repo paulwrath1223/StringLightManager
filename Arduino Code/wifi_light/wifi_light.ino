@@ -6,8 +6,8 @@
 
 #include <addons/RTDBHelper.h>
 
-#define WIFI_SSID "PHS"
-#define WIFI_PASSWORD "CONNECT2012"
+#define WIFI_SSID "WIFI910"
+#define WIFI_PASSWORD "1cadenas"
 
 
 
@@ -22,9 +22,9 @@ FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
 
+unsigned long dataMillis = 0;
 
-
-unsigned long sendDataPrevMillis = 0;
+#define DEBUG false
 
 String basePath = "/Arduino0";
 
@@ -32,19 +32,20 @@ String basePath = "/Arduino0";
 #define PIN 2
 
 
-Adafruit_NeoPixel pixels(1, PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel pixels(10, PIN, NEO_RGB + NEO_KHZ400);
 
 
 float speed = 0; // 0 means solic color, 1 means wave.
-int numPixels = 1;
+int numPixelsReal = 1;
 int r;
 int g;
 int b;
-int numColors = 1;
+int numColors;
 int updateCounter;
 int lastNumColors;
 float timing = 0;
-int update = 1;
+bool update = true;
+bool state = true; // false means the lights are off
 
 String path;
 String speedPath;
@@ -52,87 +53,88 @@ String lightLengthPath;
 String colorLengthPath;
 String colorPath;
 String updatePath;
+String statePath;
 
 int waveOffset = 0;
 
-uint32_t colorList[1];
+uint32_t colorList[200];
+uint32_t currentColor;
 
-void updateCloud()
-
+void updateCloud(bool forceUpdate = false)
 {
-    Serial.print("COLOR OF (200, 100, 100)");
-    Serial.println(pixels.Color(200, 100, 100));
-    Serial.println("timing shit idek");
-    while(!(Firebase.ready() && (millis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0)))
+    if(DEBUG)
     {
-      delay(1);
-      Serial.print(".");
-    }
-    int tempUpdate = 0;
-    sendDataPrevMillis = millis();
-    Serial.println("database query began");
-    Firebase.getInt(fbdo, updatePath, &tempUpdate);
-    update = tempUpdate;
-
-    if(update == 1)
+      Serial.println("database query began");
+    }      
+    Firebase.getBool(fbdo, updatePath, &update);
+    Firebase.getBool(fbdo, statePath, &state);
+    if(update || forceUpdate)
     {
-        Serial.println("update is true");
-        float tempSpeed = 0;
-        Firebase.getFloat(fbdo, speedPath, &tempSpeed);
-        speed = tempSpeed;
-//        Serial.printf("Get float... %s\n", Firebase.getFloat(fbdo, speedPath, &speed) ? String(fbdo.to<float>()).c_str() : fbdo.errorReason().c_str());            
+       
 
-        
+        Firebase.getFloat(fbdo, speedPath, &speed);
         lastNumColors = numColors;
-        int tempNumColors = 0;
-        Firebase.getInt(fbdo, colorLengthPath, &tempNumColors);
-        numColors = 1;
-        if( ! (lastNumColors == numColors))
-        {
-            if (colorList != 0)
-            {
-              delete [] colorList;
-            }
-            colorList = new uint32_t[numPixels];
-        }
-        int tempNumPixels = 0;
-        Firebase.getInt(fbdo, lightLengthPath, &tempNumPixels);
-        numPixels = tempNumPixels;
 
-        pixels.updateLength(numPixels);
-        
+        Firebase.getInt(fbdo, colorLengthPath, &numColors);
+
+        // numColors = Firebase.getInt(fbdo, colorLengthPath);
+
+        Firebase.getInt(fbdo, lightLengthPath, &numPixelsReal);
+
+        // numPixelsReal = Firebase.getInt(fbdo, lightLengthPath);
+        pixels.updateLength(numPixelsReal);
+
+        pixels.clear();
+        pixels.show(); // Initialize all pixels to 'off'
+        if(DEBUG)
+        {
+          Serial.print("begining color query: ");
+          Serial.print("numColors: ");
+          Serial.println(numColors);
+        }
         for(int counter = 0; counter<numColors; counter++)
         {
           path = colorPath + String(counter) + "/";
-          int tr = 0;
-          Firebase.getInt(fbdo, path+"r/", &tr);
-          int tg = 0;
-          Firebase.getInt(fbdo, path+"g/", &tg);
-          int tb = 0;
-          Firebase.getInt(fbdo, path+"b/", &tb);
-
-          
-          Serial.println(" color: ");
-          Serial.print("  r: ");
-          Serial.println(tr);
-          Serial.print("  g: ");
-          Serial.println(tg);
-          Serial.print("  b: ");
-          Serial.println(tb);
-          Serial.print("final: ");
-          Serial.println(pixels.Color(tr, tg, tb));
-          colorList[counter] = pixels.Color(tr, tg, tb);
+          if(DEBUG)
+          {
+            Serial.print("path: ");
+            Serial.println(path);
+          }
+          Firebase.getInt(fbdo, path+"r/", &r);
+          if(DEBUG)
+          {
+            Serial.print("r: ");
+            Serial.println(r);
+          }
+          Firebase.getInt(fbdo, path+"g/", &g);
+          if(DEBUG)
+          {
+            Serial.print("g: ");
+            Serial.println(g);
+          }
+          Firebase.getInt(fbdo, path+"b/", &b);
+          if(DEBUG)
+          {
+            Serial.print("b: ");
+            Serial.println(b);
+          }
+          // r = Firebase.getInt(fbdo, path+"r/");
+          // g = Firebase.getInt(fbdo, path+"g/");
+          // b = Firebase.getInt(fbdo, path+"b/");
+          colorList[counter] = pixels.Color(r, g, b);
         }
-
-        Firebase.setInt(fbdo, updatePath, 0);
+        Firebase.setInt(fbdo, updatePath, false);
     }
-    Serial.println("database query done :");
-    Serial.print("speed: ");
-    Serial.println(speed);
-    Serial.print("numColors: ");
-    Serial.println(numColors);
-    Serial.print("numPixels: ");
-    Serial.println(numPixels);
+    if(DEBUG)
+    {
+      Serial.println("database query done :");
+      Serial.print("speed: ");
+      Serial.println(speed);
+      Serial.print("numColors: ");
+      Serial.println(numColors);
+      Serial.print("numPixelsReal: ");
+      Serial.println(numPixelsReal);
+    }
 
 }
 
@@ -143,9 +145,12 @@ void setup()
   speedPath = basePath + "/speed";
   lightLengthPath = basePath + "/numLights";
   colorLengthPath = basePath + "/colorLength";
-  colorPath = basePath+"/colors";
+  colorPath = basePath+"/colors/";
+  statePath = basePath + "/state";
 
   pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
+  pixels.clear();
+  pixels.show(); // Initialize all pixels to 'off'
   Serial.begin(115200);
 
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -176,81 +181,62 @@ void setup()
 
   Firebase.begin(&config, &auth);
 
-  Serial.println("before update");
-  updateCloud();
+
+  updateCloud(true);
+
+
+
+  Serial.print("colorList: ");
+  for(int co = 0; co < 10; co++)
+  {
+    Serial.println(colorList[co]);
+  }
   Serial.println("Finished with setup");
+
 
 }
 
 void loop()
 {
-  Serial.println("loop started");
-  if(updateCounter > 1000)
+  if(updateCounter > 100)
   {
-    updateCloud();
+    updateCloud(false);
     updateCounter = 0;
   }
-  Serial.println("after update counter");
   //Flash string (PROGMEM and  (FPSTR), String,, String C/C++ string, const char, char array, string literal are supported
   //in all Firebase and FirebaseJson functions, unless F() macro is not supported
 
   timing += speed;
-  Serial.println("timing done");
-  if(timing > 1)
+  
+  while(timing > 1)
   {
     timing-=1;
     waveOffset++;    
-  }  
+  }
   if( !(waveOffset < numColors))  // >=
   {
     waveOffset = 0;
   }
-  Serial.println("pixel update loop");
-  for(int i=0; i<numPixels; i++)  // For each pixel...
+  if(state)
   {
-      Serial.print("in loop at i = ");
-      Serial.println(i);
-      Serial.print("color to display: ");
-      Serial.println(colorList[((i + waveOffset) % numColors)]);
-
-      
-      pixels.setPixelColor(i, colorList[((i + waveOffset) % numColors)]); // THESE LINES HAVE BIG FUCK UP
-      pixels.show();   // Send the updated pixel colors to the hardware.
-      Serial.print("end loop loop at i = ");
-      Serial.println(i);
+    for(int i=0; i<numPixelsReal; i++)  // For each pixel...
+    {
+        currentColor = colorList[((i + waveOffset) % numColors)];
+        pixels.setPixelColor(i, currentColor);
+        if(DEBUG)
+        {
+          Serial.print("setting pixel ");
+          Serial.print(i);
+          Serial.print(" to ");
+          Serial.println(currentColor);
+        }
+    }
   }
+  else
+  {
+    pixels.clear();
+  }
+  pixels.show();   // Send the updated pixel colors to the hardware.
   updateCounter++;
+  
 }
-
-
-/*
---------------- CUT HERE FOR EXCEPTION DECODER ---------------
-
-Exception (0):
-epc1=0x40106f7e epc2=0x00000000 epc3=0x00000000 excvaddr=0x00000000 depc=0x00000000
-
->>>stack>>>
-
-ctx: cont
-sp: 3ffffde0 end: 3fffffc0 offset: 0190
-3fffff70:  3ffef5dc 3ffeee78 3ffef690 40205226  
-3fffff80:  3ffeede4 11258b0a 00000000 feefeffe  
-3fffff90:  feefeffe feefeffe feefeffe 3ffef73c  
-3fffffa0:  3fffdad0 00000000 3ffef728 4021910c  
-3fffffb0:  feefeffe feefeffe 3ffe8658 40100e5d  
-<<<stack<<<
-
---------------- CUT HERE FOR EXCEPTION DECODER ---------------
-
- ets Jan  8 2013,rst cause:2, boot mode:(3,7)
-
-load 0x4010f000, len 3460, room 16 
-tail 4
-chksum 0xcc
-load 0x3fff20b8, len 40, room 4 
-tail 4
-chksum 0xc9
-csum 0xc9
-v00082e80
-~ld
-*/
