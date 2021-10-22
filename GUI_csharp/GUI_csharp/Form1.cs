@@ -938,7 +938,7 @@ namespace GUI_csharp
 
         private async void updateCheckBox()
         {
-            string tempText;
+
             bool[] boolarray = new bool[numberOfCheckBoxes];
             for (int id = 0; id < numberOfCheckBoxes; id++)
             {
@@ -946,11 +946,10 @@ namespace GUI_csharp
                 if (control is CheckBox)
                 {
                     CheckBox cb = (CheckBox)control;
-                    tempText = cb.Text;
 
                     cb.Text = "Loading...";
 
-                    cb.Text = tempText;
+
 
                     string statePath = ("Arduino" + id + "/state/");
                     FirebaseResponse response = await client.GetAsync(statePath);
@@ -962,13 +961,22 @@ namespace GUI_csharp
                     {
                         boolarray[id] = false;
                     }
-                    cb.Text = tempText;
+
+                    UpdateText(cb, id);
+                    checkBoxesChangeState(boolarray);
+
                 }
                 else
                     Console.WriteLine("CheckBox not found!");
 
             }
-            checkBoxesChangeState(boolarray);
+
+        }
+
+        private async void UpdateText(CheckBox check, int id)
+        {
+            await Task.Delay(1000);
+            check.Text = "ID: " + id;
         }
 
 
