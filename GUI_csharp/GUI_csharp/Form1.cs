@@ -136,7 +136,7 @@ namespace GUI_csharp
         {
             List<Item> items = new List<Item>();
             items.Add(new Item() { Text = "choose ID", Value = null });
-            for (int counter = 0; counter < 20; counter++)
+            for (int counter = 0; counter < numberOfCheckBoxes; counter++)
             {
                 items.Add(new Item() { Text = counter.ToString(), Value = counter.ToString() });
             }
@@ -177,7 +177,6 @@ namespace GUI_csharp
                 }
                 tb_Speed.Text = "";
 
-                bttn_Speed_Click(new Button(), EventArgs.Empty);
                 e.SuppressKeyPress = true;  // https://www.youtube.com/watch?v=dQw4w9WgXcQ
             }
         }
@@ -845,7 +844,7 @@ namespace GUI_csharp
             bool state = false;
             if (cb.CheckState == CheckState.Checked)
                 state = cb.Checked;
-            //TODO: change state(id, state)
+            SetArduinoState(id, state);
         }
 
         private void checkBoxesChangeState(bool[] states)
@@ -874,11 +873,13 @@ namespace GUI_csharp
 
         private void turnArduinosOnOffToolStripMenuItem_Click(object sender, EventArgs e)
         {
+
             if (!checkBoxesVisible)
             {
                 panelCheckBoxes.Visible = true;
                 controlsHide(false);
                 checkBoxesVisible = true;
+                updateCheckBox();
             }
             else
             {
@@ -899,6 +900,29 @@ namespace GUI_csharp
             lbl_id.Visible = state;
             cb_arduinoID.Visible = state;
         }
+
+        private async void SetArduinoState(int id, bool state)
+        {
+            string statePath = ("Arduino" + id + "/state/");
+            FirebaseResponse response = await client.GetAsync(statePath);
+            if (response.ResultAs<string>() != null)
+            {
+                await client.SetAsync(statePath, state);
+            }
+        }
+
+        private async void updateCheckBox()
+        {
+            bool[] boolarray = new bool[numberOfCheckBoxes];
+            for (int id = 0; id < numberOfCheckBoxes; id++)
+            {
+                string statePath = ("Arduino" + id + "/state/");
+                FirebaseResponse response = await client.GetAsync(statePath);
+                boolarray[id] = (response.ResultAs<bool>());
+            }
+            checkBoxesChangeState(boolarray);
+        }
+
 
         #endregion
     }
