@@ -26,26 +26,29 @@ unsigned long dataMillis = 0;
 
 #define DEBUG false
 
-String basePath = "/Arduino0";
+String basePath = "/Arduino3";
 
 
 #define PIN 2
 
 
-Adafruit_NeoPixel pixels(10, PIN, NEO_RGB + NEO_KHZ400);
-
+Adafruit_NeoPixel pixels(500, PIN, NEO_RGB + NEO_KHZ400);
 
 float speed = 0; // 0 means solic color, 1 means wave.
-int numPixelsReal = 1;
+int numPixelsReal = 500;
 int r;
 int g;
 int b;
 int numColors;
 int updateCounter;
 int lastNumColors;
+int mirrorIndex;
+int unMirroredIndex;
 float timing = 0;
 bool update = true;
 bool state = true; // false means the lights are off
+int numPastMirror;
+int currentIndex;
 
 String path;
 String speedPath;
@@ -54,10 +57,11 @@ String colorLengthPath;
 String colorPath;
 String updatePath;
 String statePath;
+String mirrorIndexPath;
 
 int waveOffset = 0;
 
-uint32_t colorList[200];
+uint32_t colorList[150];
 uint32_t currentColor;
 
 void updateCloud(bool forceUpdate = false)
@@ -76,6 +80,9 @@ void updateCloud(bool forceUpdate = false)
         lastNumColors = numColors;
 
         Firebase.getInt(fbdo, colorLengthPath, &numColors);
+
+        Firebase.getInt(fbdo, mirrorIndexPath, &mirrorIndex);
+
 
         // numColors = Firebase.getInt(fbdo, colorLengthPath);
 
@@ -134,6 +141,10 @@ void updateCloud(bool forceUpdate = false)
       Serial.println(numColors);
       Serial.print("numPixelsReal: ");
       Serial.println(numPixelsReal);
+      Serial.print("numPixels according to library: ");
+      Serial.println(pixels.numPixels());
+      Serial.print("mirrorIndex: ");
+      Serial.println(mirrorIndex);
     }
 
 }
@@ -147,6 +158,7 @@ void setup()
   colorLengthPath = basePath + "/colorLength";
   colorPath = basePath+"/colors/";
   statePath = basePath + "/state";
+  mirrorIndexPath = basePath + "/mirrorIndex";
 
   pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
   pixels.clear();
@@ -198,15 +210,15 @@ void setup()
 
 void loop()
 {
-  if(updateCounter > 100)
+  if(updateCounter > 10000)
   {
     updateCloud(false);
     updateCounter = 0;
   }
   //Flash string (PROGMEM and  (FPSTR), String,, String C/C++ string, const char, char array, string literal are supported
   //in all Firebase and FirebaseJson functions, unless F() macro is not supported
-
-  timing += speed;
+  delay(1); // might mess everything up
+  timing -= speed;
   
   while(timing > 1)
   {
@@ -226,17 +238,56 @@ void loop()
   }
   if(state)
   {
-    for(int i=0; i<numPixelsReal; i++)  // For each pixel...
+    if(mirrorIndex == 0)
     {
-        currentColor = colorList[((i + waveOffset) % numColors)];
-        pixels.setPixelColor(i, currentColor);
-        if(DEBUG)
-        {
-          Serial.print("setting pixel ");
-          Serial.print(i);
-          Serial.print(" to ");
-          Serial.println(currentColor);
-        }
+      Serial.println("unmirrored");
+      for(int i=0; i<numPixelsReal; i++)  // For each pixel...
+      {
+          currentColor = colorList[((numColors + i + waveOffset) % numColors)];
+          pixels.setPixelColor(i, currentColor);
+          if(DEBUG)
+          {
+            Serial.print("setting pixel ");
+            Serial.print(i);
+            Serial.print(" to ");
+            Serial.println(currentColor);
+          }
+      }
+    }
+    else // mirror point exists
+    {
+      Serial.println("mirrored");
+      for(int i = 0; i < numPixelsReal; i++)  
+      {
+          if(i < mirrorIndex)
+          {
+            currentIndex = ((numColors + i + waveOffset) % numColors);
+            currentColor = colorList[currentIndex];
+            pixels.setPixelColor(i, currentColor);
+            if(DEBUG)
+            {
+              Serial.print("setting unmirrored pixel ");
+              Serial.print(i);
+              Serial.print(" to currentColor[");
+              Serial.println(currentIndex);
+            }
+          }
+          else // current pixel is or is past the mirror index
+          {
+            numPastMirror = i-mirrorIndex;
+            unMirroredIndex = (mirrorIndex-abs(numPastMirror));
+            currentIndex = ((numColors + unMirroredIndex + waveOffset) % numColors);
+            currentColor = colorList[currentIndex];
+            pixels.setPixelColor(i, currentColor);
+            if(DEBUG)
+            {
+              Serial.print("setting mirrored pixel ");
+              Serial.print(i);
+              Serial.print(" to currentColor[");
+              Serial.println(currentIndex);
+            }
+          }
+      }
     }
   }
   else
