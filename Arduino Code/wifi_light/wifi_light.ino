@@ -26,7 +26,7 @@ unsigned long dataMillis = 0;
 
 #define DEBUG false
 
-String basePath = "/Arduino3";
+String basePath = "/Arduino6";
 
 
 #define PIN 2
@@ -187,16 +187,11 @@ void setup()
   /* Assign the callback function for the long running token generation task */
   config.token_status_callback = tokenStatusCallback; //see addons/TokenHelper.h
 
-  Firebase.setMaxRetry(fbdo, 3);
-
   Firebase.reconnectWiFi(true);
 
   Firebase.begin(&config, &auth);
 
-
   updateCloud(true);
-
-
 
   Serial.print("colorList: ");
   for(int co = 0; co < 10; co++)
@@ -204,9 +199,9 @@ void setup()
     Serial.println(colorList[co]);
   }
   Serial.println("Finished with setup");
-
-
 }
+
+
 
 void loop()
 {
