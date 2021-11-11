@@ -26,7 +26,9 @@ unsigned long dataMillis = 0;
 
 #define DEBUG false
 
-String basePath = "/Arduino6";
+
+
+String basePath = "users/2ia6lTHtEYhyiYbbXLMytXh1Cnc2/Arduinos/6/";
 
 
 #define PIN 2
@@ -271,7 +273,12 @@ void loop()
           {
             numPastMirror = i-mirrorIndex;
             unMirroredIndex = (mirrorIndex-abs(numPastMirror));
-            currentIndex = ((numColors + unMirroredIndex + waveOffset) % numColors);
+            currentIndex = (unMirroredIndex + waveOffset);
+            while(currentIndex < 0)
+            {
+              currentIndex += numColors;
+            } 
+            currentIndex = (currentIndex % numColors);
             currentColor = colorList[currentIndex];
             pixels.setPixelColor(i, currentColor);
             if(DEBUG)
